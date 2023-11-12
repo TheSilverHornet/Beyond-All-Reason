@@ -4,10 +4,8 @@
 -- antinuke_cloud_main
 -- antinuke_cloud_rings2
 
-
--- add emp burst ?
 return {
-  ["antinuke"] = {
+  ["antinuke_new"] = {
     usedefaultexplosions = false,
     cloud = {
       air                = true,
@@ -67,7 +65,6 @@ return {
         dir                = [[dir]],
         explosiongenerator = [[custom:ANTINUKE_CLOUD_RINGS2]],
         pos                = [[0, -256, 0]],
-        rotParams          = [[-5 r10, -5 r10, -5 r10]],
       },
     },
     center = {
@@ -94,7 +91,7 @@ return {
         dir                = [[dir]],
         explosiongenerator = [[custom:ANTINUKE_CLOUD_MAIN]],
         pos                = [[0, 0, 0]],
-	},
+      },
     },
     top = {
       air                = true,
@@ -200,6 +197,7 @@ return {
         particlespeedspread = 1,
         pos                = [[0, 0, 0]],
         rotParams          = [[-5 r10, -5 r10, -5 r10]],
+
         sizegrowth         = 16,
         sizemod            = 0.75,
         texture            = [[smokesmall]],

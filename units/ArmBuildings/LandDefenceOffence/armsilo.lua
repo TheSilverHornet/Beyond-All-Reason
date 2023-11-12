@@ -125,7 +125,7 @@ return {
 				cratermult = 1.2,
 				edgeeffectiveness = 0.45,
 				energypershot = 125000,
-				explosiongenerator = "custom:newnuke",
+				explosiongenerator = "custom:nuke_300",
 				firestarter = 100,
 				flighttime = 400,
 				impulseboost = 0.5,
