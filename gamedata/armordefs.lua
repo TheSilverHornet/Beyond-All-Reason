@@ -453,6 +453,11 @@ local armorDefs = {
 		"corsfig",
 		"corvamp",
 		"legfig",
+		"corrock",
+		"corpaper",
+		"corscissors",
+		"legvenator",
+		"legionairre",
 	},
 	shields = {
 		"armgate",

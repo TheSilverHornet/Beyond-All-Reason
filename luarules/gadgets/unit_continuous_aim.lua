@@ -116,6 +116,9 @@ local convertedUnits = {
 	[UnitDefNames.legcomlvl3.id] = 5,
 	[UnitDefNames.legcomlvl4.id] = 5,
 	[UnitDefNames.leegmech.id] = 5,
+	[UnitDefNames.corrock.id] = 5,
+	[UnitDefNames.corscissors.id] = 7,
+	[UnitDefNames.corpaper.id] = 7,
 }
 
 
