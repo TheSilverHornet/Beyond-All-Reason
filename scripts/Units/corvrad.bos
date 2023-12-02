@@ -73,6 +73,28 @@ SweetSpot(piecenum)
 	return (0);
 }
 
+
+AimPrimary(heading, pitch)
+{
+	return (1);
+}
+
+FirePrimary()
+{
+
+}
+
+AimFromPrimary(piecenum)
+{
+	piecenum = base;
+}
+
+QueryPrimary(piecenum)
+{
+	piecenum = base;
+}
+
+
 Killed(severity, corpsetype)
 {
 	if( severity <= 25 )

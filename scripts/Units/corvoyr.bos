@@ -320,6 +320,25 @@ SetStunned(State)
 	}
 }
 
+AimPrimary(heading, pitch)
+{
+	return (0);
+}
+
+FirePrimary()
+{
+
+}
+
+AimFromPrimary(piecenum)
+{
+	piecenum = torso;
+}
+
+QueryPrimary(piecenum)
+{
+	piecenum = torso;
+}
 
 SweetSpot(piecenum)
 {

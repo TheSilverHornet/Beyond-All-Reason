@@ -7,7 +7,7 @@ return {
 		metalcost = 99,
 		buildpic = "CORVOYR.DDS",
 		buildtime = 3950,
-		canattack = false,
+		canattack = true,
 		canmove = true,
 		category = "BOT MOBILE ALL NOTSUB NOWEAPON NOTSHIP NOTAIR NOTHOVER SURFACE EMPABLE",
 		collisionvolumeoffsets = "0 0 0",
@@ -36,6 +36,7 @@ return {
 		turninplacespeedlimit = 0.99,
 		turnrate = 670.45001,
 		customparams = {
+			maxrange=400,
 			unitgroup = 'util',
 			model_author = "FireStorm",
 			normaltex = "unittextures/cor_normal.dds",

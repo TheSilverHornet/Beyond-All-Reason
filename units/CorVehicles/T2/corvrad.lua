@@ -7,7 +7,7 @@ return {
 		metalcost = 92,
 		buildpic = "CORVRAD.DDS",
 		buildtime = 4220,
-		canattack = false,
+		canattack = true,
 		canmove = true,
 		category = "ALL TANK MOBILE NOTSUB NOWEAPON NOTSHIP NOTAIR NOTHOVER SURFACE EMPABLE",
 		collisionvolumeoffsets = "0 0 0",
@@ -40,6 +40,7 @@ return {
 		turninplacespeedlimit = 0.825,
 		turnrate = 210,
 		customparams = {
+			maxrange = 500,
 			unitgroup = 'util',
 			model_author = "Beherith",
 			normaltex = "unittextures/cor_normal.dds",
@@ -116,6 +117,38 @@ return {
 			},
 			select = {
 				[1] = "cvradsel",
+			},
+		},
+		weapondefs = {
+			corvrad_xrangexfinder = {
+				areaofeffect = 0,
+				craterboost = 0,
+				cratermult = 0,
+				edgeeffectiveness = 0.65,
+				metalpershot = 0,
+				noselfdamage = true,
+				range = 500,
+				reloadtime = 16,
+				smokeTrailCastShadow = false,
+				castshadow = true,
+				tolerance = 4000,
+				turnrate = 15000,
+				weaponacceleration = 100,
+				weapontimer = 3,
+				weapontype = "Cannon",
+				weaponvelocity = 100,
+				damage = {
+					default = 1,
+				},
+				customparams = {
+					bogus = 1,
+				}
+			},
+		},
+		weapons = {
+			[1] = {
+				def = "corvrad_xrangexfinder",
+				onlytargetcategory = "SURFACE",
 			},
 		},
 	},

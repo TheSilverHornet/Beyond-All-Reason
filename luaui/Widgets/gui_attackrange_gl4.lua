@@ -250,7 +250,7 @@ local function initializeUnitDefRing(unitDefID)
 
 			local customParams = weaponDef.customParams
 			local wName = weaponDef.name
-			if (weaponDef.type == "AircraftBomb") or (wName:find("bogus")) then
+			if (weaponDef.type == "AircraftBomb") or (wName:find("bogus") or (wName:find("rangefinder")) then
 				--Spring.Echo("bogus weapon found: "..tostring(wName))
 				range = 0
 			end
