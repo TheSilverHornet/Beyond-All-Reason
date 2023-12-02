@@ -36,7 +36,7 @@ return {
 		turninplacespeedlimit = 0.99,
 		turnrate = 670.45001,
 		customparams = {
-			maxrange=400,
+			maxrange=600,
 			unitgroup = 'util',
 			model_author = "FireStorm",
 			normaltex = "unittextures/cor_normal.dds",
@@ -115,5 +115,47 @@ return {
 				[1] = "ckradsel",
 			},
 		},
+		
+		weapondefs = {
+			corvoyr_rangefinder = {
+				areaofeffect = 0,
+				edgeeffectiveness = 0.65,
+				firestarter = 100,
+				name = "Rangefinder",
+				noselfdamage = true,
+				range = 1310,
+				reloadtime = 100,
+				smoketrail = true,
+				smokePeriod = 9,
+				smoketime = 45,
+				smokesize = 16.0,
+				smokecolor = 0.7,
+				smokeTrailCastShadow = false,
+				castshadow = true, --projectile
+				soundhit = "xplomed4",
+				soundhitwet = "splslrg",
+				soundstart = "Rockhvy1",
+				texture1 = "null",
+				texture2 = "smoketrailbar",
+				texture3 = "null",
+				tolerance = 4000,
+				turnrate = 15000,
+				weaponacceleration = 100,
+				weapontimer = 3,
+				weapontype = "Cannon",
+				weaponvelocity = 415,
+				damage = {
+					default = 1,
+				},
+			},
+		},
+		weapons = {
+			[1] = {
+				badtargetcategory = "MOBILE",
+				def = "corvoyr_rangefinder",
+				onlytargetcategory = "SURFACE",
+			},
+		},
+		
 	},
 }

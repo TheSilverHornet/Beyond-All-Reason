@@ -40,7 +40,7 @@ return {
 		turninplacespeedlimit = 0.825,
 		turnrate = 210,
 		customparams = {
-			maxrange = 500,
+			maxrange = 600,
 			unitgroup = 'util',
 			model_author = "Beherith",
 			normaltex = "unittextures/cor_normal.dds",
@@ -120,34 +120,42 @@ return {
 			},
 		},
 		weapondefs = {
-			corvrad_xrangexfinder = {
+			corvoyr_rangefinder = {
 				areaofeffect = 0,
-				craterboost = 0,
-				cratermult = 0,
 				edgeeffectiveness = 0.65,
-				metalpershot = 0,
+				firestarter = 100,
+				name = "Rangefinder",
 				noselfdamage = true,
-				range = 500,
-				reloadtime = 16,
+				range = 1310,
+				reloadtime = 100,
+				smoketrail = true,
+				smokePeriod = 9,
+				smoketime = 45,
+				smokesize = 16.0,
+				smokecolor = 0.7,
 				smokeTrailCastShadow = false,
-				castshadow = true,
+				castshadow = true, --projectile
+				soundhit = "xplomed4",
+				soundhitwet = "splslrg",
+				soundstart = "Rockhvy1",
+				texture1 = "null",
+				texture2 = "smoketrailbar",
+				texture3 = "null",
 				tolerance = 4000,
 				turnrate = 15000,
 				weaponacceleration = 100,
 				weapontimer = 3,
 				weapontype = "Cannon",
-				weaponvelocity = 100,
+				weaponvelocity = 415,
 				damage = {
 					default = 1,
 				},
-				customparams = {
-					bogus = 1,
-				}
 			},
 		},
 		weapons = {
 			[1] = {
-				def = "corvrad_xrangexfinder",
+				badtargetcategory = "MOBILE",
+				def = "corvoyr_rangefinder",
 				onlytargetcategory = "SURFACE",
 			},
 		},
