@@ -95,7 +95,7 @@ return {
 				name = "Heavy a2a missiles",
 				noselfdamage = true,
 				range = 810,
-				reloadtime = 8,
+				reloadtime = 9,
 				smoketrail = true,
 				smokePeriod = 7,
 				smoketime = 14,
