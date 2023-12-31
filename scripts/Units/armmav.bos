@@ -429,6 +429,9 @@ StopWalking() {
 		turn lloarm to z-axis <0.000000> speed <14.854698>;
 		turn lhandgun to x-axis <0.000000> speed <107.974460>;
 	}
+	
+	sleep 200;
+	turn head to x-axis <20> speed <20>;
 }
 // REMEMBER TO animspeed = 4 in Create() !!
 UnitSpeed(){
