@@ -38,7 +38,7 @@ return {
 		maxwaterdepth = 0,
 		movementclass = "RAPTORSMALLHOVER",
 		noautofire = false,
-		nochasecategory = "VTOL HOVER",
+		nochasecategory = "VTOL SPACE HOVER",
 		objectname = "Raptors/raptor_dodo2_electric.s3o",
 		script = "Raptors/raptor_dodo2.cob",
 		seismicsignature = 4,
@@ -67,6 +67,7 @@ return {
 			normaltex = "unittextures/chicken_m_normals.png",
 			--treeshader = "no",
 			instantselfd = true,
+			paralyzemultiplier = 0,
 		},
 		sfxtypes = {
 			explosiongenerators = {

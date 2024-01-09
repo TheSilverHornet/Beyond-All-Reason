@@ -33,7 +33,7 @@ return {
 		maxwaterdepth = 0,
 		movementclass = "RAPTORBIG2HOVER",
 		noautofire = false,
-		nochasecategory = "VTOL",
+		nochasecategory = "VTOL SPACE",
 		objectname = "Raptors/raptora2b.s3o",
 		onlytargetcategory2 = "VTOL",
 		script = "Raptors/raptora2b.cob",
@@ -158,11 +158,11 @@ return {
 		},
 		weapons = {
 			[1] = {
-				badtargetcategory = "VTOL",
+				badtargetcategory = "VTOL SPACE",
 				def = "WEAPON",
 				maindir = "0 0 1",
 				maxangledif = 125,
-				--onlytargetcategory = "NOTAIR",
+				onlytargetcategory = "NOTAIR",
 			},
 			[2] = {
 				onlytargetcategory = "VTOL",

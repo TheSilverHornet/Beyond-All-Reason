@@ -32,9 +32,8 @@ return {
 		maxwaterdepth = 0,
 		movementclass = "RAPTORALLTERRAINBIGHOVER",
 		noautofire = false,
-		nochasecategory = "VTOL",
+		nochasecategory = "VTOL SPACE",
 		objectname = "Raptors/raptoracidallterrainassault.s3o",
-		onlytargetcategory2 = "VTOL",
 		script = "Raptors/raptorallterraina1.cob",
 		seismicsignature = 0,
 		selfdestructas = "BIGBUG_DEATH_ACID",
@@ -122,7 +121,7 @@ return {
 		},
 		weapons = {
 			[1] = {
-				badtargetcategory = "VTOL",
+				badtargetcategory = "VTOL SPACE",
 				def = "acidspit",
 				maindir = "0 0 1",
 				maxangledif = 125,
