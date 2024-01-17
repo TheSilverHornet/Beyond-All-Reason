@@ -98,6 +98,9 @@ if gadgetHandler:IsSyncedCode() then
 		unitAlwaysSeen[unitDefID] = unitDef.isBuilding or unitDef.speed == 0
 	end
 
+	-- fastpass for units that don't have an attack command for other reasons
+	validUnits[UnitDefNames.legpede.id]=true
+
 	local unitTargets = {} -- data holds all unitID data
 	local pausedTargets = {}
 	--------------------------------------------------------------------------------
@@ -299,7 +302,7 @@ if gadgetHandler:IsSyncedCode() then
 		unitTargets[unitID] = nil
 	end
 
-	function removeTarget(unitID, index)
+	local function removeTarget(unitID, index)
 		tremove(unitTargets[unitID].targets, index)
 		if #unitTargets[unitID].targets == 0 then
 			removeUnit(unitID)
@@ -538,11 +541,12 @@ if gadgetHandler:IsSyncedCode() then
 		addUnitTargets(unitID, Spring.GetUnitDefID(unitID), pausedTargets[unitID].targets, true)
 		pausedTargets[unitID] = nil
 	end
-
+	
+	local emptyCmdOptions = {}
 	function gadget:UnitCmdDone(unitID, unitDefID, teamID, cmdID, cmdTag, cmdParams, cmdOptions)
 		if type(cmdOptions) ~= 'table' then
 			-- does UnitCmdDone always returns number instead of table?
-			cmdOptions = {}
+			cmdOptions = emptyCmdOptions
 		end
 		processCommand(unitID, unitDefID, teamID, cmdID, cmdParams, cmdOptions)
 		if cmdID == CMD_STOP then

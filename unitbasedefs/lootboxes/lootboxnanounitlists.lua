@@ -93,6 +93,7 @@ return {
 		"legbart",
 		"legshot",
 		"legsrail",
+		"leginfestor",
 		"legstr",
 
 		-- Vehicles
@@ -117,6 +118,7 @@ return {
 
 		-- Hovercraft
 		"corhal",
+		"legfloat",
 
 		-- Air
 		"armsb",
@@ -175,6 +177,7 @@ return {
 		"legpede",
 
 		-- Vehicles
+		"legkeres",
 		"armthor_scav",
 
 		-- Hovercraft

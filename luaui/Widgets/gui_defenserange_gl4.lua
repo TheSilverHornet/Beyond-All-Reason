@@ -130,12 +130,21 @@ local defensePosHash = {} -- key: {poshash=unitID}
 
 local featureDefIDtoUnitDefID = {} -- this table maps featureDefIDs to unitDefIDs for faster lookups on feature creation
 
+
+local unitName = {}
+local unitWeapons = {}
+for udid, ud in pairs(UnitDefs) do
+	unitName[udid] = ud.name
+	unitWeapons[udid] = ud.weapons
+end
+
+
 local vtoldamagetag = Game.armorTypes['vtol']
 local defaultdamagetag = Game.armorTypes['default']
 local function initializeUnitDefRing(unitDefID)
 
-	local weapons = UnitDefs[unitDefID].weapons
 	unitDefRings[unitDefID]['rings'] = {}
+	local weapons = unitWeapons[unitDefID]
 	for weaponNum = 1, #weapons do
 		local weaponDef = weapons[weaponNum]
 		local weaponDefID = weapons[weaponNum].weaponDef
@@ -264,9 +273,9 @@ local function initUnitList()
 	end
 	-- add scavs
 	for k,_ in pairs(scavlist) do
-		--Spring.Echo(k, UnitDefs[k].name)
-		if UnitDefNames[UnitDefs[k].name .. '_scav'] then
-			unitDefRings[UnitDefNames[UnitDefs[k].name .. '_scav'].id] = unitDefRings[k]
+		--Spring.Echo(k, unitName[k])
+		if UnitDefNames[unitName[k] .. '_scav'] then
+			unitDefRings[UnitDefNames[unitName[k] .. '_scav'].id] = unitDefRings[k]
 		end
 	end
 
@@ -275,13 +284,13 @@ local function initUnitList()
 		scavlist[k] = true
 	end
 	for k,v in pairs(scavlist) do
-		mobileAntiUnitDefs[UnitDefNames[UnitDefs[k].name .. '_scav'].id] = mobileAntiUnitDefs[k]
+		mobileAntiUnitDefs[UnitDefNames[unitName[k] .. '_scav'].id] = mobileAntiUnitDefs[k]
 	end
 
 	-- Initialize featureDefIDtoUnitDefID
 	local wreckheaps = {"_dead","_heap"}
 	for unitDefID,_ in pairs(unitDefRings) do
-		local unitDefName = UnitDefs[unitDefID].name
+		local unitDefName = unitName[unitDefID]
 		for i, suffix in pairs(wreckheaps) do
 			if FeatureDefNames[unitDefName..suffix] then
 				featureDefIDtoUnitDefID[FeatureDefNames[unitDefName..suffix].id] = unitDefID
@@ -677,7 +686,7 @@ local function initGL4()
 	smallCircleVBO = makeCircleVBO(smallCircleSegments)
 	largeCircleVBO = makeCircleVBO(largeCircleSegments)
 	for i,defRangeClass in ipairs(defenseRangeClasses) do
-		defenseRangeVAOs[defRangeClass] = makeInstanceVBOTable(circleInstanceVBOLayout,16,defRangeClass)
+		defenseRangeVAOs[defRangeClass] = makeInstanceVBOTable(circleInstanceVBOLayout,16,defRangeClass .. "_defenserange_gl4")
 		if defRangeClass:find("cannon", nil, true) or defRangeClass:find("nuke", nil, true) then
 			defenseRangeVAOs[defRangeClass].vertexVBO = largeCircleVBO
 			defenseRangeVAOs[defRangeClass].numVertices = largeCircleSegments
@@ -738,7 +747,7 @@ local function UnitDetected(unitID, unitDefID, unitTeam, noUpload)
 
 	-- otherwise we must add it!
 
-	--local weapons = unitDefs[unitDefID].weapons
+	--local weapons = unitWeapons[unitDefID]
 	local alliedUnit = (Spring.GetUnitAllyTeam(unitID) == myAllyTeam)
 	local x, y, z, mpx, mpy, mpz, apx, apy, apz = spGetUnitPosition(unitID, true, true)
 
@@ -838,7 +847,9 @@ local function removeUnit(unitID,defense)
 	defensePosHash[hashPos(defense.posx,defense.posz)] = nil
 	for instanceKey,vaoKey in pairs(defense.vaokeys) do
 		--Spring.Echo(vaoKey,instanceKey)
-		popElementInstance(defenseRangeVAOs[vaoKey],instanceKey)
+		if defenseRangeVAOs[vaoKey].instanceIDtoIndex[instanceKey] then
+			popElementInstance(defenseRangeVAOs[vaoKey],instanceKey)
+		end
 	end
 	defenses[unitID] = nil
 end
