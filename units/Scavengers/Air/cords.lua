@@ -134,7 +134,6 @@ return {
 				name = "Targetting System",
 				noselfdamage = true,
 				range = 1280,
-				reloadtime = 10,
 				metalpershot = 36,
 				energypershot = 880,
 				reloadtime = 12,
@@ -150,49 +149,60 @@ return {
 					bogus = 1,
 				},
 			},
+			
+			vtol_emg = {
+				areaofeffect = 16,
+				avoidfeature = false,
+
+				metalpershot = 36,
+				energypershot = 880,
+				reloadtime = 12,
+				stockpile = true,
+				stockpiletime = 2,
+
+				craterareaofeffect = 0,
+				craterboost = 0,
+				cratermult = 0,
+				edgeeffectiveness = 0.15,
+				explosiongenerator = "custom:plasmahit-medium",
+				impulseboost = 0.123,
+				impulsefactor = 0.123,
+				intensity = 0.8,
+				name = "Rapid-fire a2g plasma guns",
+				noselfdamage = true,
+				range = 380,
+
+				rgbcolor = "1 0.95 0.4",
+				size = 3,
+				soundhitwet = "splshbig",
+				soundstart = "brawlemg",
+				sprayangle = 1024,
+				tolerance = 6000,
+				turret = false,
+				weapontimer = 1,
+				weapontype = "Cannon",
+				weaponvelocity = 800,--450,
+				customparams = {
+					spawns_name = "corak",
+					spawns_surface = "LAND", -- Available: "LAND SEA"
+				},
+				damage = {
+					default = 0,
+				},
+			},
 		},
 		weapons = {
-			[2] = {
-				badtargetcategory = "MOBILE",
-				def = "CORBOMBFAKE",
-				onlytargetcategory = "NOTSUB",
-			},
 			[1] = {
 				badtargetcategory = "MOBILE",
-				def = "CORBOMB",
+				def = "corbombfake",
 				onlytargetcategory = "NOTSUB",
-				slaveto = 1,
 			},
-			[3] = {
+			[2] = {
 				badtargetcategory = "MOBILE",
-				def = "CORBOMB",
+				def = "corbomb",
 				onlytargetcategory = "NOTSUB",
-				slaveto = 1,
 			},
-			[4] = {
-				badtargetcategory = "MOBILE",
-				def = "CORBOMB",
-				onlytargetcategory = "NOTSUB",
-				slaveto = 1,
-			},
-			[5] = {
-				badtargetcategory = "MOBILE",
-				def = "CORBOMB",
-				onlytargetcategory = "NOTSUB",
-				slaveto = 1,
-			},
-			[6] = {
-				badtargetcategory = "MOBILE",
-				def = "CORBOMB",
-				onlytargetcategory = "NOTSUB",
-				slaveto = 1,
-			},
-			[7] = {
-				badtargetcategory = "MOBILE",
-				def = "CORBOMB",
-				onlytargetcategory = "NOTSUB",
-				slaveto = 1,
-			},
+
 		},
 	},
 }

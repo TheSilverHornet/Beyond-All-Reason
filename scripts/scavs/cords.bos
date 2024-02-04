@@ -153,6 +153,15 @@ Create(){
 	hide bomb3l;
 	hide bomb3r;
 		
+	turn bomb1l to x-axis <-90> now; 
+	turn bomb1r to x-axis <-90> now; 
+	turn bomb2l to x-axis <-90> now; 
+	turn bomb2r to x-axis <-90> now; 
+	turn bomb3l to x-axis <-90> now; 
+	turn bomb3r to x-axis <-90> now; 
+	
+	
+	
 	turn flarefl to x-axis <-90> now; 
 	turn flarefr to x-axis <-90> now; 
 	turn flarebl to x-axis <-90> now; 
@@ -227,7 +236,7 @@ AimWeapon1(heading,pitch){
 }
 
 Shot1(){ // called second, and after each bomb
-	get PRINT(2, currbomb);
+	/*get PRINT(2, currbomb);
 	
 	if (currbomb == 0) hide bomb3l;
 	if (currbomb == 1) hide bomb3r;
@@ -235,7 +244,7 @@ Shot1(){ // called second, and after each bomb
 	if (currbomb == 3) hide bomb2r;
 	if (currbomb == 4) hide bomb1l;
 	if (currbomb == 5) hide bomb1r;
-	
+	*/
 	currbomb = currbomb + 1;
 }
 
@@ -245,6 +254,80 @@ FireWeapon1(){ //called first and once only
 	currbomb = 0;
 	signal 32;
 	//start-script Reload();
+	
+	if (grunts_stockpiled == 0) {
+	
+	}
+	
+	if (grunts_stockpiled == 1) {
+		hide bomb3l;
+		hide bomb3r;
+		hide bomb2l;
+		hide bomb2r;
+		hide bomb1l;
+		hide bomb1r;
+		emit-sfx 2048+1 from bomb3l;
+	}	
+	if (grunts_stockpiled == 2) {
+		hide bomb3l;
+		hide bomb3r;
+		hide bomb2l;
+		hide bomb2r;
+		hide bomb1l;
+		hide bomb1r;
+		emit-sfx 2048+1 from bomb3l;
+		emit-sfx 2048+1 from bomb3r;
+	}
+	if (grunts_stockpiled == 3) {
+		hide bomb3l;
+		hide bomb3r;
+		hide bomb2l;
+		hide bomb2r;
+		hide bomb1l;
+		hide bomb1r;
+		emit-sfx 2048+1 from bomb3l;
+		emit-sfx 2048+1 from bomb3r;
+		emit-sfx 2048+1 from bomb2l;
+	}
+	if (grunts_stockpiled == 4) {
+		hide bomb3l;
+		hide bomb3r;
+		hide bomb2l;
+		hide bomb2r;
+		hide bomb1l;
+		hide bomb1r;
+		emit-sfx 2048+1 from bomb3l;
+		emit-sfx 2048+1 from bomb3r;
+		emit-sfx 2048+1 from bomb2l;
+		emit-sfx 2048+1 from bomb2r;
+	}
+	if (grunts_stockpiled == 5) {
+		hide bomb3l;
+		hide bomb3r;
+		hide bomb2l;
+		hide bomb2r;
+		hide bomb1l;
+		hide bomb1r;
+		emit-sfx 2048+1 from bomb3l;
+		emit-sfx 2048+1 from bomb3r;
+		emit-sfx 2048+1 from bomb2l;
+		emit-sfx 2048+1 from bomb2r;
+		emit-sfx 2048+1 from bomb1l;
+	}
+	if (grunts_stockpiled == 6) {
+		hide bomb3l;
+		hide bomb3r;
+		hide bomb2l;
+		hide bomb2r;
+		hide bomb1l;
+		hide bomb1r;
+		emit-sfx 2048+1 from bomb3l;
+		emit-sfx 2048+1 from bomb3r;
+		emit-sfx 2048+1 from bomb2l;
+		emit-sfx 2048+1 from bomb2r;
+		emit-sfx 2048+1 from bomb1l;
+		emit-sfx 2048+1 from bomb1r;
+	}
 	
 	call-script lua_BosSetStockpile(0);
 }
