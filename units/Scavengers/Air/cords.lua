@@ -137,13 +137,9 @@ return {
 				reloadtime = 10,
 				metalpershot = 36,
 				energypershot = 880,
-				reloadtime = 10,
+				reloadtime = 12,
 				stockpile = true,
-				stockpiletime = 3,
-				customparams = {
-					spawns_name = "corak",
-					spawns_surface = "LAND", -- Available: "LAND SEA"
-				},
+				stockpiletime = 2,
 				weapontype = "AircraftBomb",
 				--weaponvelocity = 650,
 				damage = {
@@ -156,12 +152,12 @@ return {
 			},
 		},
 		weapons = {
-			[1] = {
+			[2] = {
 				badtargetcategory = "MOBILE",
 				def = "CORBOMBFAKE",
 				onlytargetcategory = "NOTSUB",
 			},
-			[2] = {
+			[1] = {
 				badtargetcategory = "MOBILE",
 				def = "CORBOMB",
 				onlytargetcategory = "NOTSUB",

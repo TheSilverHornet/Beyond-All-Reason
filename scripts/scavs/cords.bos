@@ -57,12 +57,14 @@ RequestState(requestedstate, currentstate)
 }
 
 lua_BosSetStockpile(count) {
+	get PRINT (8, count);
+	grunts_stockpiled = count;
 	return 1;
 }
 
 SetStockpile(num_stockpiled)
 {
-	get PRINT (num_stockpiled);
+	get PRINT (7, num_stockpiled);
 	if (num_stockpiled == 0)
 	{
 		hide bomb1l;
@@ -162,6 +164,7 @@ Create(){
 	hide flarebr;
 	
 	currbomb = 0;
+	grunts_stockpiled = 0;
 	//call-script InitState();
 }
 
@@ -185,7 +188,9 @@ Deactivate()
 	//start-script RequestState(1);
 }
 
+//not currently used
 Reload(){
+	get PRINT(999999999);
 	set-signal-mask 32;
 	sleep 3000;
 	while (currbomb > 0) {
@@ -200,9 +205,11 @@ Reload(){
 	}
 }
 
+//currbomb = which piece is being emitted from, NOT a stockpile count
+
 QueryWeapon1(piecenum) // called third, and all the fucking time
 {
-	//get PRINT(3, currbomb);
+	get PRINT(3, currbomb);
 	piecenum = bay3l + currbomb - 1;
 	//piecenum = bomb3l;
 }
@@ -220,7 +227,7 @@ AimWeapon1(heading,pitch){
 }
 
 Shot1(){ // called second, and after each bomb
-	//get PRINT(2, currbomb);
+	get PRINT(2, currbomb);
 	
 	if (currbomb == 0) hide bomb3l;
 	if (currbomb == 1) hide bomb3r;
@@ -233,7 +240,8 @@ Shot1(){ // called second, and after each bomb
 }
 
 FireWeapon1(){ //called first and once only
-	//get PRINT(1, currbomb);
+	get PRINT(1, currbomb);
+	get PRINT(11, grunts_stockpiled);
 	currbomb = 0;
 	signal 32;
 	//start-script Reload();
@@ -243,6 +251,19 @@ FireWeapon1(){ //called first and once only
 
 
 
+/*
+1 FireWeapon1 currbomb
+11 FireWeapon1 grunts_stockpiled
+2 shot1 currbomb (animation related, should increment piece)
+3 QueryWeapon1 currbomb (specify which piece to emit bomb from)
+
+7 setstockpile , num_stockpiled (called by lua)
+8 bossetstockpile , calls lua
+
+9999999 old reload, shouldn't ever occur
+*/
+
+/*
 QueryWeapon2(piecenum) // called third, and all the fucking time
 {
 	piecenum = bomb3r;
@@ -355,7 +376,7 @@ AimWeapon7(heading,pitch){
 }
 FireWeapon7(){
 }
-
+//*/
 
 
 
