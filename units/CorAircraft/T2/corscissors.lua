@@ -25,7 +25,7 @@ return {
 		maxpitch = 0.7,
 		maxrudder = 0.009,
 		maxslope = 10,
-		maxvelocity = 7.92,		
+		maxvelocity = 7.42,		
 		maxwaterdepth = 0,
 		nochasecategory = "NOTAIR",
 		objectname = "Units/CORVAMP.s3o",

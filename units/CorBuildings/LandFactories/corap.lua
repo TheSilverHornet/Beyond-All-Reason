@@ -41,7 +41,7 @@ return {
 			[2] = "corfink",
 			[3] = "corveng",
 			[4] = "corshad",
-			[5] = "corvalk",
+			[5] = "corpaper",
 			[6] = "corbw",
 		},
 		customparams = {

@@ -25,7 +25,7 @@ return {
 		maxpitch = 0.625,
 		maxrudder = 0.01,
 		maxslope = 10,
-		maxvelocity = 7.92,
+		maxvelocity = 8.92,
 		maxwaterdepth = 0,
 		nochasecategory = "NOTAIR",
 		objectname = "Units/CORVENG.s3o",
@@ -121,7 +121,7 @@ return {
 				turret = true,
 				--weapontimer = 1,
 				weapontype = "LaserCannon",
-				weaponvelocity = 1000,
+				weaponvelocity = 1200,
 				damage = {
 					commanders = 1,
 					default = 2,

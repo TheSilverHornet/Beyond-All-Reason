@@ -40,10 +40,12 @@ return {
 			[2] = "corape",
 			[3] = "corhurc",
 			[4] = "cortitan",
-			[5] = "corvamp",
+			[5] = "corscissors",
 			[6] = "corawac",
 			[7] = "corseah",
 			[8] = "corcrw",
+			[9] = "corcrowd",
+			[10] = "corrock",
 		},
 		customparams = {
 			usebuildinggrounddecal = true,
