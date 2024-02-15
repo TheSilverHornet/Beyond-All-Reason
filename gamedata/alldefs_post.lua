@@ -84,8 +84,14 @@ local function processWeapons(unitDefName, unitDef)
 end
 
 function UnitDef_Post(name, uDef)
+	local modOptions = Spring.GetModOptions()
+
+	if not uDef.icontype then
+		uDef.icontype = name
+	end
+
 	-- Reverse Gear
-	if Spring.GetModOptions().experimentalreversegear == true then
+	if modOptions.experimentalreversegear == true then
 		if (not uDef.canfly) and uDef.speed then
 			uDef.rspeed = uDef.speed*0.65
 		end
@@ -93,7 +99,7 @@ function UnitDef_Post(name, uDef)
 
 	-- Rebalance Candidates
 
-	if Spring.GetModOptions().experimentalrebalancet2labs == true then --
+	if modOptions.experimentalrebalancet2labs == true then --
 		if name == "coralab" or name == "coravp" or name == "armalab" or name == "armavp" then
 			uDef.metalcost = 1800 --2900
 		end
@@ -102,7 +108,7 @@ function UnitDef_Post(name, uDef)
 		end
 	end
 
-	if Spring.GetModOptions().experimentalrebalancet2metalextractors == true then
+	if modOptions.experimentalrebalancet2metalextractors == true then
 		if name == "armmoho" or name == "armuwmme" then
 			uDef.extractsmetal = 0.002 --0.004
 			uDef.metalcost = 240 --620
@@ -128,7 +134,7 @@ function UnitDef_Post(name, uDef)
 		end
 	end
 
-	if Spring.GetModOptions().experimentalrebalancet2energy == true then
+	if modOptions.experimentalrebalancet2energy == true then
 		if name == "armaca" or name == "armack" or name == "armacv" then
 			local numBuildoptions = #uDef.buildoptions
 			uDef.buildoptions[numBuildoptions+1] = "armwint2"
@@ -139,44 +145,9 @@ function UnitDef_Post(name, uDef)
 		end
 	end
 
-	if Spring.GetModOptions().expandedt2sea == true then
-		if name == "corcrus" then
-			uDef.speed = 54
-			uDef.health = 6200
-			uDef.weapondefs.adv_decklaser.reloadtime = 0.333
-			uDef.weapondefs.cor_crus.range = 500
-		end
-		if name == "armcrus" then
-			uDef.speed = 60
-			uDef.health = 5600
-			uDef.weapondefs.laser.reloadtime = 0.333
-			uDef.weapondefs.gauss.range = 500
-		end
-		if name == "armasy" then
-			for ix, UnitName in pairs(uDef.buildoptions) do
-				if UnitName == "armcarry" then
-					uDef.buildoptions[ix] = "armantiship"
-				end
-			end
-			local numBuildoptions = #uDef.buildoptions
-			uDef.buildoptions[numBuildoptions+1] = "armdronecarry"
-			uDef.buildoptions[numBuildoptions+2] = "armlship"
-		end
-		if name == "corasy" then
-			for ix, UnitName in pairs(uDef.buildoptions) do
-				if UnitName == "corcarry" then
-					uDef.buildoptions[ix] = "corantiship"
-				end
-			end
-			local numBuildoptions = #uDef.buildoptions
-			uDef.buildoptions[numBuildoptions+1] = "cordronecarry"
-			uDef.buildoptions[numBuildoptions+2] = "corfship"
-		end
-	end
-
 	-- Control Mode Tweaks
-	if Spring.GetModOptions().scoremode ~= "disabled" then
-		if Spring.GetModOptions().scoremode_chess == true then
+	if modOptions.scoremode ~= "disabled" then
+		if modOptions.scoremode_chess == true then
 			-- Disable Wrecks
 			uDef.corpse = nil
 			-- Disable Bad Units
@@ -259,21 +230,22 @@ function UnitDef_Post(name, uDef)
 	if uDef.customparams then
 		if not uDef.customparams.techlevel then uDef.customparams.techlevel = 1 end
 		if not uDef.customparams.subfolder then uDef.customparams.subfolder = "none" end
-
-		if Spring.GetModOptions().unit_restrictions_notech2 then
+		if modOptions.unit_restrictions_notech2 then
 			if tonumber(uDef.customparams.techlevel) == 2 or tonumber(uDef.customparams.techlevel) == 3 then
 				uDef.maxthisunit = 0
 			end
 		end
 
-		if Spring.GetModOptions().unit_restrictions_notech3 then
+		if modOptions.unit_restrictions_notech3 then
 			if tonumber(uDef.customparams.techlevel) == 3 then
 				uDef.maxthisunit = 0
 			end
 		end
 
-		if Spring.GetModOptions().unit_restrictions_noair then
+		if modOptions.unit_restrictions_noair then
 			if string.find(uDef.customparams.subfolder, "Aircraft") then
+				uDef.maxthisunit = 0
+			elseif uDef.customparams.unitgroup and uDef.customparams.unitgroup == "aa" then
 				uDef.maxthisunit = 0
 			elseif uDef.canfly then
 				uDef.maxthisunit = 0
@@ -306,19 +278,19 @@ function UnitDef_Post(name, uDef)
 			end
 		end
 
-		if Spring.GetModOptions().unit_restrictions_noextractors then
+		if modOptions.unit_restrictions_noextractors then
 			if (uDef.extractsmetal and uDef.extractsmetal > 0) and (uDef.customparams.metal_extractor and uDef.customparams.metal_extractor > 0) then
 				uDef.maxthisunit = 0
 			end
 		end
 
-		if Spring.GetModOptions().unit_restrictions_noconverters then
+		if modOptions.unit_restrictions_noconverters then
 			if uDef.customparams.energyconv_capacity and uDef.customparams.energyconv_efficiency then
 				uDef.maxthisunit = 0
 			end
 		end
 
-		if Spring.GetModOptions().unit_restrictions_nonukes then
+		if modOptions.unit_restrictions_nonukes then
 			local Nukes = {
 				armamd = true,
 				armsilo = true,
@@ -338,7 +310,7 @@ function UnitDef_Post(name, uDef)
 			end
 		end
 
-		if Spring.GetModOptions().unit_restrictions_notacnukes then
+		if modOptions.unit_restrictions_notacnukes then
 			local TacNukes = {
 				armemp = true,
 				cortron = true,
@@ -350,7 +322,7 @@ function UnitDef_Post(name, uDef)
 			end
 		end
 
-		if Spring.GetModOptions().unit_restrictions_nolrpc then
+		if modOptions.unit_restrictions_nolrpc then
 			local LRPCs = {
 				armbotrail = true,
 				armbrtha = true,
@@ -372,67 +344,44 @@ function UnitDef_Post(name, uDef)
 	end
 
 	-- Add balanced extras
-	if Spring.GetModOptions().releasecandidates then
-	
-	
-		--Better Dragon
-		if name == "coraap" then			
-			for ix, UnitName in pairs(uDef.buildoptions) do
-				if UnitName == "corcrw" then
-					uDef.buildoptions[ix] = "corcrwh"
-				end
-			end
-		end
+	if modOptions.releasecandidates then
 
 		--Shockwave mex
 		if name == "armaca" or name == "armack" or name == "armacv" then
 			local numBuildoptions = #uDef.buildoptions
 			uDef.buildoptions[numBuildoptions+1] = "armshockwave"
-		end	
-	
+		end
+
+		--Printer
 
 		if name == "coravp" then
-			for ix, UnitName in pairs(uDef.buildoptions) do
-				if UnitName == "corseal" then
-					uDef.buildoptions[ix] = "corsala"
-				end
-			end
 			local numBuildoptions = #uDef.buildoptions
 			uDef.buildoptions[numBuildoptions+1] = "corvac" --corprinter
 			--uDef.buildoptions[numBuildoptions+2] = "corsala"
 			--uDef.buildoptions[numBuildoptions+3] = "corforge"
 			--uDef.buildoptions[numBuildoptions+4] = "cortorch"
 		end
-		if name == "coramsub" then
-			for ix, UnitName in pairs(uDef.buildoptions) do
-				if UnitName == "corseal" then
-					uDef.buildoptions[ix] = "corsala"
-				end
-			end
-
-		end
-
-		-- demon
-
-		if name == "corgant" then
+		if name == "legavp" then
 			local numBuildoptions = #uDef.buildoptions
-			uDef.buildoptions[numBuildoptions+1] = "cordemont4"		
+			uDef.buildoptions[numBuildoptions+1] = "corvac" --corprinter
 		end
-
-		if name == "corgantuw" then
+		
+		--Drone Carriers
+		
+		if name == "armasy" then
 			local numBuildoptions = #uDef.buildoptions
-			uDef.buildoptions[numBuildoptions+1] = "cordemont4"
-			
-			for ix, UnitName in pairs(uDef.buildoptions) do
-				if UnitName == "corseal" then
-					uDef.buildoptions[ix] = "corsala"
-				end
-			end
+			uDef.buildoptions[numBuildoptions+1] = "armdronecarry"
 		end
+		if name == "corasy" then
+			local numBuildoptions = #uDef.buildoptions
+			uDef.buildoptions[numBuildoptions+1] = "cordronecarry"
+		end
+		
 	end
 
 	-- Add scav units to normal factories and builders
-	if Spring.GetModOptions().experimentalextraunits then
+	if modOptions.experimentalextraunits then
+
 		if name == "armshltx" then
 			local numBuildoptions = #uDef.buildoptions
 			uDef.buildoptions[numBuildoptions+1] = "armrattet4"
@@ -449,29 +398,28 @@ function UnitDef_Post(name, uDef)
 			uDef.buildoptions[numBuildoptions+2] = "armpwt4"
 			uDef.buildoptions[numBuildoptions+3] = "armvadert4"
 			uDef.buildoptions[numBuildoptions+4] = "armmeatball"
-		elseif name == "corgant" or name == "leggant" then
-			local numBuildoptions = #uDef.buildoptions
-			uDef.buildoptions[numBuildoptions+1] = "cordemont4"
-			uDef.buildoptions[numBuildoptions+2] = "corkarganetht4"
-			uDef.buildoptions[numBuildoptions+3] = "corgolt4"
-			uDef.buildoptions[numBuildoptions+4] = "corakt4"
-			uDef.buildoptions[numBuildoptions+5] = "corthermite"
 		elseif name == "corgantuw" then
 			local numBuildoptions = #uDef.buildoptions
 			uDef.buildoptions[numBuildoptions+1] = "corgolt4"
+			uDef.buildoptions[numBuildoptions+2] = "corakt4"
 		elseif name == "armvp" then
 			local numBuildoptions = #uDef.buildoptions
 			uDef.buildoptions[numBuildoptions+1] = "armzapper"
-		elseif name == "coravp" then
+		elseif name == "legavp" then
 			local numBuildoptions = #uDef.buildoptions
+			uDef.buildoptions[numBuildoptions+1] = "corgatreap"
+			uDef.buildoptions[numBuildoptions+2] = "corforge"
+			uDef.buildoptions[numBuildoptions+3] = "corftiger"
+			uDef.buildoptions[numBuildoptions+4] = "cortorch"
+			uDef.buildoptions[numBuildoptions+5] = "corvac" --corprinter
+		elseif name == "coravp" then
 			printerpresent = false
 			for ix, UnitName in pairs(uDef.buildoptions) do
 				if UnitName == "corvac" then
 					printerpresent = true
 				end
 			end
-			
-			
+			local numBuildoptions = #uDef.buildoptions
 			uDef.buildoptions[numBuildoptions+1] = "corgatreap"
 			uDef.buildoptions[numBuildoptions+2] = "corforge"
 			uDef.buildoptions[numBuildoptions+3] = "corftiger"
@@ -480,6 +428,12 @@ function UnitDef_Post(name, uDef)
 				uDef.buildoptions[numBuildoptions+5] = "corsala"
 				uDef.buildoptions[numBuildoptions+6] = "corvac" --corprinter
 			end
+		elseif name == "corgant" or name == "leggant" then
+			local numBuildoptions = #uDef.buildoptions
+			uDef.buildoptions[numBuildoptions+1] = "corkarganetht4"
+			uDef.buildoptions[numBuildoptions+2] = "corgolt4"
+			uDef.buildoptions[numBuildoptions+3] = "corakt4"
+			uDef.buildoptions[numBuildoptions+4] = "corthermite"
 		elseif name == "armca" or name == "armck" or name == "armcv" then
 			--local numBuildoptions = #uDef.buildoptions
 		elseif name == "corca" or name == "corck" or name == "corcv" then
@@ -521,7 +475,7 @@ function UnitDef_Post(name, uDef)
 		elseif name == "legaca" or name == "legack" or name == "legacv" then
 			local numBuildoptions = #uDef.buildoptions
 			uDef.buildoptions[numBuildoptions+1] = "corapt3"
-			uDef.buildoptions[numBuildoptions+2] = "corminibuzz"
+			uDef.buildoptions[numBuildoptions+2] = "legministarfall"
       		uDef.buildoptions[numBuildoptions+3] = "corwint2"
 			uDef.buildoptions[numBuildoptions+4] = "corhllllt"
 			uDef.buildoptions[numBuildoptions+6] = "cordoomt3"
@@ -650,7 +604,7 @@ function UnitDef_Post(name, uDef)
 			uDef.maxacc = uDef.speed*0.00166
 			uDef.maxdec  = uDef.speed*0.00166
 		elseif uDef.canfly then
-			if Spring.GetModOptions().air_rework == true then
+			if modOptions.air_rework == true then
 				uDef.speed = uDef.speed*0.65
 				uDef.health = uDef.health*1.5
 
@@ -675,7 +629,7 @@ function UnitDef_Post(name, uDef)
 				uDef.maxacc = 1
 				uDef.maxdec  = 0.25
 				uDef.usesmoothmesh = true
-	
+
 				-- flightmodel
 				uDef.maxaileron = 0.025
 				uDef.maxbank = 0.8
@@ -741,7 +695,7 @@ function UnitDef_Post(name, uDef)
 		if uDef.featuredefs and uDef.health then
 			if uDef.featuredefs.dead then
 				uDef.featuredefs.dead.damage = uDef.health
-				if Spring.GetModOptions().experimentalrebalancewreckstandarization then
+				if modOptions.experimentalrebalancewreckstandarization then
 					if uDef.metalcost and uDef.energycost then
 						if name and not string.find(name, "_scav") then
 							-- if (name and uDef.featuredefs.dead.metal) or uDef.name then
@@ -760,7 +714,7 @@ function UnitDef_Post(name, uDef)
 		if uDef.featuredefs and uDef.health then
 			if uDef.featuredefs.heap then
 				uDef.featuredefs.heap.damage = uDef.health
-				if Spring.GetModOptions().experimentalrebalancewreckstandarization then
+				if modOptions.experimentalrebalancewreckstandarization then
 					if uDef.metalcost and uDef.energycost then
 						if name and not string.find(name, "_scav") then
 							-- if (name and uDef.featuredefs.heap.metal) or uDef.name then
@@ -819,7 +773,7 @@ function UnitDef_Post(name, uDef)
 			uDef.crashdrag = 0.01	-- default 0.005
 
 			if not (string.find(name, "fepoch") or string.find(name, "fblackhy") or string.find(name, "corcrw") or string.find(name, "legfort")) then--(string.find(name, "liche") or string.find(name, "crw") or string.find(name, "fepoch") or string.find(name, "fblackhy")) then
-				if not Spring.GetModOptions().experimentalnoaircollisions then
+				if not modOptions.experimentalnoaircollisions then
 					uDef.collide = false
 				else
 					uDef.collide = true
@@ -913,34 +867,27 @@ function UnitDef_Post(name, uDef)
     --	end
     --end
 
-	-- Unbacom
 
-	if Spring.GetModOptions().unba == true then
-		unbaUnits = VFS.Include("unbaconfigs/unbaunits_post.lua")
-		uDef = unbaUnits.unbaUnitTweaks(name, uDef)
-	end
+if modOptions.emprework == true then
 
-
-if Spring.GetModOptions().emprework == true then
-
-		if name == "armstil" then		
+		if name == "armstil" then
 			uDef.weapondefs.stiletto_bomb.areaofeffect = 250
 			uDef.weapondefs.stiletto_bomb.burst = 3
 			uDef.weapondefs.stiletto_bomb.burstrate = 0.3333
 			uDef.weapondefs.stiletto_bomb.edgeeffectiveness = 0.30
 			uDef.weapondefs.stiletto_bomb.damage.default = 1200
-			uDef.weapondefs.stiletto_bomb.paralyzetime = 5			
+			uDef.weapondefs.stiletto_bomb.paralyzetime = 5
 		end
 
 		if name == "armspid" then
-			uDef.weapondefs.spider.paralyzetime = 5			
+			uDef.weapondefs.spider.paralyzetime = 5
 			--uDef.weapondefs.spider.damage.default = 1500
 		end
 
 		if name == "armdfly" then
-			uDef.weapondefs.armdfly_paralyzer.paralyzetime = 5			
+			uDef.weapondefs.armdfly_paralyzer.paralyzetime = 5
 		end
-		
+
 
 		if name == "armemp" then
 			uDef.weapondefs.armemp_weapon.areaofeffect = 512
@@ -948,7 +895,7 @@ if Spring.GetModOptions().emprework == true then
 			uDef.weapondefs.armemp_weapon.edgeeffectiveness = -0.10
 			uDef.weapondefs.armemp_weapon.paralyzetime = 15
 			uDef.weapondefs.armemp_weapon.damage.default = 60000
-			
+
 		end
 		if name == "armshockwave" then
 			uDef.weapondefs.hllt_bottom.areaofeffect = 150
@@ -957,31 +904,31 @@ if Spring.GetModOptions().emprework == true then
 			uDef.weapondefs.hllt_bottom.paralyzetime = 5
 			uDef.weapondefs.hllt_bottom.damage.default = 800
 		end
-		
+
 
 		if name == "armthor" then
 			uDef.weapondefs.empmissile.areaofeffect = 250
 			uDef.weapondefs.empmissile.edgeeffectiveness = -0.50
 			uDef.weapondefs.empmissile.damage.default = 20000
-			uDef.weapondefs.empmissile.paralyzetime = 5	
+			uDef.weapondefs.empmissile.paralyzetime = 5
 			uDef.weapondefs.emp.damage.default = 450
-			uDef.weapondefs.emp.paralyzetime = 5	
+			uDef.weapondefs.emp.paralyzetime = 5
 		end
 
 		if name == "corbw" then
 			uDef.weapondefs.bladewing_lyzer.damage.default = 400
-			uDef.weapondefs.bladewing_lyzer.paralyzetime = 5	
+			uDef.weapondefs.bladewing_lyzer.paralyzetime = 5
 		end
 
 
 		if name == "corsumo" then
 			uDef.customparams.paralyzemultiplier = 0.9
 		end
-		
+
 		if name == "armmar" then
 			uDef.customparams.paralyzemultiplier = 1.3
 		end
-		
+
 		if name == "armbanth" then
 			uDef.customparams.paralyzemultiplier = 2
 		end
@@ -992,26 +939,26 @@ if Spring.GetModOptions().emprework == true then
 		if name == "armvang" then
 			uDef.customparams.paralyzemultiplier = 1.1
 		end
-		
+
 		if name == "armlun" then
 			uDef.customparams.paralyzemultiplier = 1.05
 		end
-		
+
 		if name == "corshiva" then
 			uDef.customparams.paralyzemultiplier = 1.1
 		end
-		
+
 		if name == "corcat" then
 			uDef.customparams.paralyzemultiplier = 1.05
 		end
-		
+
 		if name == "corkarg" then
 			uDef.customparams.paralyzemultiplier = 1.2
 		end
 		if name == "corsok" then
 			uDef.customparams.paralyzemultiplier = 1.1
 		end
-		if name == "cordemont4" then
+		if name == "cordemon" then
 			uDef.customparams.paralyzemultiplier = 1.2
 		end
 
@@ -1019,7 +966,7 @@ end
 
 
 --Air rework
-if Spring.GetModOptions().air_rework == true then
+if modOptions.air_rework == true then
 	if name == "armhawk" then
 		uDef.metalcost = 205
 		uDef.energycost = 6500
@@ -1029,10 +976,12 @@ if Spring.GetModOptions().air_rework == true then
 		uDef.speed = 233
 		uDef.maxrudder = 0.016
 		uDef.maxbank = 0.65
-		uDef.health = 760
+		uDef.health = 730
 		uDef.sightdistance = 550
 		uDef.cruisealtitude = 220
-		uDef.weapondefs.armvtol_advmissile.proximitypriority = -1	
+		uDef.weapondefs.armvtol_advmissile.proximitypriority = 0
+		uDef.weapondefs.armvtol_advmissile.areaofeffect = 52
+		uDef.weapondefs.armvtol_advmissile.impactonly = 0
 		uDef.weapondefs.armvtol_advmissile.flighttime = 2.7
 		uDef.weapondefs.armvtol_advmissile.range = 1430
 		uDef.weapondefs.armvtol_advmissile.reloadtime = 2.7
@@ -1053,16 +1002,22 @@ if Spring.GetModOptions().air_rework == true then
 		uDef.maxacc = 0.36
 		uDef.maxrudder = 0.013
 		uDef.maxbank = 0.65
-		uDef.health = 310
+		uDef.health = 290
 		uDef.sightdistance = 460
 		uDef.cruisealtitude = 110
-		uDef.weapondefs.armvtol_missile.proximitypriority = -1
+		uDef.weapondefs.armvtol_missile.explosiongenerator = "custom:genericshellexplosion-tiny"
+		uDef.weapondefs.armvtol_missile.smokePeriod = 8
+		uDef.weapondefs.armvtol_missile.smoketime = 14
+		uDef.weapondefs.armvtol_missile.smokesize = 5.0
+		uDef.weapondefs.armvtol_missile.smokecolor = 0.66
+		uDef.weapondefs.armvtol_missile.cegtag = "missiletrailtiny"
+		uDef.weapondefs.armvtol_missile.proximitypriority = 0
 		uDef.weapondefs.armvtol_missile.flighttime = 1.7
 		uDef.weapondefs.armvtol_missile.range = 530
-		uDef.weapondefs.armvtol_missile.reloadtime = 2.4
+		uDef.weapondefs.armvtol_missile.reloadtime = 3
 		uDef.weapondefs.armvtol_missile.startvelocity = 110
-		uDef.weapondefs.armvtol_missile.tolerance = 12000
-		uDef.weapondefs.armvtol_missile.turnrate = 23500
+		uDef.weapondefs.armvtol_missile.tolerance = 11000
+		uDef.weapondefs.armvtol_missile.turnrate = 23000
 		uDef.weapondefs.armvtol_missile.name = "Light guided a2a/a2g missile launcher"
 		uDef.weapondefs.armvtol_missile.weaponacceleration = 350
 		uDef.weapondefs.armvtol_missile.canattackground = true
@@ -1082,12 +1037,12 @@ if Spring.GetModOptions().air_rework == true then
 		uDef.maxbank = 0.15
 		--uDef.maxpitch = 0.02
 		--uDef.maxelevator = 0.02
-		uDef.health = 2400
+		uDef.health = 2250
 		uDef.sightdistance = 460
 		uDef.cruisealtitude = 110
 		--uDef.turnradius = 128
-		uDef.weapondefs.armsfig_weapon.proximitypriority = -1
-		uDef.weapondefs.armsfig_weapon.flighttime = 1.2
+		uDef.weapondefs.armsfig_weapon.proximitypriority = 0
+		uDef.weapondefs.armsfig_weapon.flighttime = 1.4
 		uDef.weapondefs.armsfig_weapon.range = 650
 		uDef.weapondefs.armsfig_weapon.burst = 4
 		uDef.weapondefs.armsfig_weapon.burstrate = 0.15
@@ -1096,21 +1051,21 @@ if Spring.GetModOptions().air_rework == true then
 		uDef.weapondefs.armsfig_weapon.smoketime = 48
 		uDef.weapondefs.armsfig_weapon.smokesize = 10
 		uDef.weapondefs.armsfig_weapon.smoketrail = true
-		uDef.weapondefs.armsfig_weapon.areaofeffect = 180
-		uDef.weapondefs.armsfig_weapon.reloadtime = 6
+		uDef.weapondefs.armsfig_weapon.areaofeffect = 200
+		uDef.weapondefs.armsfig_weapon.reloadtime = 3
 		uDef.weapondefs.armsfig_weapon.startvelocity = 180
-		uDef.weapondefs.armsfig_weapon.tolerance = 3000
-		uDef.weapondefs.armsfig_weapon.turnrate = 3000
+		uDef.weapondefs.armsfig_weapon.tolerance = 1000
+		uDef.weapondefs.armsfig_weapon.turnrate = 4000
 		uDef.weapondefs.armsfig_weapon.weaponacceleration = 450
 		uDef.weapondefs.armsfig_weapon.weaponvelocity = 1000
-		uDef.weapondefs.armsfig_weapon.wobble = 3
+		uDef.weapondefs.armsfig_weapon.wobble = 5
 		uDef.weapondefs.armsfig_weapon.dance = 30
 		uDef.weapondefs.armsfig_weapon.damage = {
 			default = 1,
-			vtol = 360,
+			vtol = 180,
 		}
 	end
-	if name == "armawac" then 
+	if name == "armawac" then
 		uDef.metalcost = uDef.metalcost * 1.15 + uDef.energycost / 70 * 0.15 - (uDef.metalcost * 1.15 + uDef.energycost / 70 * 0.15)%1
 		uDef.speed = uDef.speed * 0.7
 		uDef.maxrudder = 0.017
@@ -1119,7 +1074,7 @@ if Spring.GetModOptions().air_rework == true then
 		uDef.maxacc = 0.4
 		uDef.cruisealtitude = 250
 	end
-	if name == "armpeep" then 
+	if name == "armpeep" then
 		uDef.metalcost = uDef.metalcost * 1.15 + uDef.energycost / 70 * 0.15 - (uDef.metalcost * 1.15 + uDef.energycost / 70 * 0.15)%1
 		uDef.health = 133
 		uDef.speed = uDef.speed * 0.7
@@ -1128,7 +1083,7 @@ if Spring.GetModOptions().air_rework == true then
 		uDef.maxacc = 0.4
 		uDef.cruisealtitude = 120
 	end
-	if name == "corawac" then 
+	if name == "corawac" then
 		uDef.metalcost = uDef.metalcost * 1.15 + uDef.energycost / 70 * 0.15 - (uDef.metalcost * 1.15 + uDef.energycost / 70 * 0.15)%1
 		uDef.speed = uDef.speed * 0.7
 		uDef.maxrudder = 0.017
@@ -1137,7 +1092,7 @@ if Spring.GetModOptions().air_rework == true then
 		uDef.maxacc = 0.4
 		uDef.cruisealtitude = 250
 	end
-	if name == "corfink" then 
+	if name == "corfink" then
 		uDef.metalcost = uDef.metalcost * 1.15 + uDef.energycost / 70 * 0.15 - (uDef.metalcost * 1.15 + uDef.energycost / 70 * 0.15)%1
 		uDef.health = 150
 		uDef.speed = uDef.speed * 0.7
@@ -1145,7 +1100,7 @@ if Spring.GetModOptions().air_rework == true then
 		uDef.maxbank = 0.66
 		uDef.maxacc = 0.4
 	end
-	if name == "corhunt" then 
+	if name == "corhunt" then
 		uDef.metalcost = uDef.metalcost * 1.15 + uDef.energycost / 70 * 0.15 - (uDef.metalcost * 1.15 + uDef.energycost / 70 * 0.15)%1
 		uDef.speed = uDef.speed * 0.7
 		uDef.maxrudder = 0.015
@@ -1153,7 +1108,7 @@ if Spring.GetModOptions().air_rework == true then
 		uDef.maxacc = 0.4
 		uDef.cruisealtitude = 220
 	end
-	if name == "armsehak" then 
+	if name == "armsehak" then
 		uDef.metalcost = uDef.metalcost * 1.15 + uDef.energycost / 70 * 0.15 - (uDef.metalcost * 1.15 + uDef.energycost / 70 * 0.15)%1
 		uDef.speed = uDef.speed * 0.7
 		uDef.maxrudder = 0.015
@@ -1166,14 +1121,17 @@ if Spring.GetModOptions().air_rework == true then
 		uDef.energycost = 5500
 		uDef.buildtime = uDef.buildtime * 1.15
 		uDef.maxaileron = 0.02
-		uDef.maxacc = 0.7
+		uDef.maxacc = 0.78
+		uDef.maxdec = 0.11
 		uDef.speed = 250
 		uDef.maxrudder = 0.018
 		uDef.maxbank = 0.65
-		uDef.health = 650
+		uDef.health = 600
 		uDef.sightdistance = 550
 		uDef.cruisealtitude = 220
-		--uDef.canLoopbackAttack = true
+		uDef.weapondefs.corvtol_advmissile.impactonly = 0
+		uDef.weapondefs.corvtol_advmissile.proximitypriority = 0
+		uDef.weapondefs.corvtol_advmissile.areaofeffect = 64
 		uDef.weapondefs.corvtol_advmissile.flighttime = 2.4
 		uDef.weapondefs.corvtol_advmissile.range = 1050
 		uDef.weapondefs.corvtol_advmissile.reloadtime = 1.15
@@ -1194,16 +1152,22 @@ if Spring.GetModOptions().air_rework == true then
 		uDef.maxacc = 0.36
 		uDef.maxrudder = 0.013
 		uDef.maxbank = 0.65
-		uDef.health = 310
+		uDef.health = 290
 		uDef.sightdistance = 460
 		uDef.cruisealtitude = 110
-		uDef.weapondefs.corvtol_missile.proximitypriority = -1
+		uDef.weapondefs.corvtol_missile.explosiongenerator = "custom:genericshellexplosion-tiny"
+		uDef.weapondefs.corvtol_missile.smokePeriod = 8
+		uDef.weapondefs.corvtol_missile.smoketime = 14
+		uDef.weapondefs.corvtol_missile.smokesize = 5.0
+		uDef.weapondefs.corvtol_missile.smokecolor = 0.66
+		uDef.weapondefs.corvtol_missile.cegtag = "missiletrailtiny"
+		uDef.weapondefs.corvtol_missile.proximitypriority = 0
 		uDef.weapondefs.corvtol_missile.flighttime = 1.7
 		uDef.weapondefs.corvtol_missile.range = 530
-		uDef.weapondefs.corvtol_missile.reloadtime = 2.4
+		uDef.weapondefs.corvtol_missile.reloadtime = 3
 		uDef.weapondefs.corvtol_missile.startvelocity = 110
-		uDef.weapondefs.corvtol_missile.tolerance = 12000
-		uDef.weapondefs.corvtol_missile.turnrate = 23500
+		uDef.weapondefs.corvtol_missile.tolerance = 11000
+		uDef.weapondefs.corvtol_missile.turnrate = 23000
 		uDef.weapondefs.corvtol_missile.weaponacceleration = 350
 		uDef.weapondefs.corvtol_missile.canattackground = true
 		uDef.weapondefs.corvtol_missile.name = "Light guided a2a/a2g missile launcher"
@@ -1223,11 +1187,11 @@ if Spring.GetModOptions().air_rework == true then
 		uDef.maxbank = 0.15
 		--uDef.maxpitch = 0.02
 		--uDef.maxelevator = 0.02
-		uDef.health = 2600
+		uDef.health = 2450
 		uDef.sightdistance = 460
 		uDef.cruisealtitude = 110
 		uDef.turnradius = 128
-		uDef.weapondefs.corsfig_weapon.proximitypriority = -1	
+		uDef.weapondefs.corsfig_weapon.proximitypriority = -1
 		uDef.weapondefs.corsfig_weapon.flighttime = 1.7
 		uDef.weapondefs.corsfig_weapon.range = 680
 		uDef.weapondefs.corsfig_weapon.areaofeffect = 200
@@ -1268,7 +1232,7 @@ if Spring.GetModOptions().air_rework == true then
 		uDef.weapondefs.med_emg.reloadtime = 1.15
 	end
 	if name == "corcrw" or name == "corcrwh" then
-		uDef.health = uDef.health * 1.6
+		uDef.health = uDef.health * 1.5
 		uDef.speed = uDef.speed * 0.75
 		--uDef.turnrate = uDef.turnrate * 1.5
 		uDef.cruisealtitude = 80
@@ -1319,7 +1283,7 @@ if Spring.GetModOptions().air_rework == true then
 		uDef.weapondefs.vtol_rocket2.burst = 4
 		uDef.weapondefs.vtol_rocket2.burstrate = 0.15
 		uDef.weapondefs.vtol_rocket2.explosiongenerator = "custom:genericshellexplosion-medium"
-		uDef.weapondefs.vtol_rocket2.weaponvelocity = 430
+		uDef.weapondefs.vtol_rocket2.weaponvelocity = 550
 		uDef.weapondefs.vtol_rocket2.damage = {
 			default = 140,
 			vtol = 28,
@@ -1344,10 +1308,10 @@ if Spring.GetModOptions().air_rework == true then
 	if name == "cortitan" or name == "corshad" or name == "armthund" or name == "armliche" or name == "armstil" or name == "armlance" then
 		uDef.metalcost = uDef.metalcost * 1.15 + uDef.energycost / 70 * 0.15 - (uDef.metalcost * 1.15 + uDef.energycost / 70 * 0.15)%1
 		uDef.speed = uDef.speed * 0.65
-		uDef.maxacc = uDef.maxacc * 1.2
+		uDef.maxacc = uDef.maxacc * 1.3
 		uDef.maxbank = 0.65
 		uDef.maxrudder = uDef.maxrudder * 2.2
-		uDef.health = uDef.health * 1.7
+		uDef.health = uDef.health * 1.6
 		uDef.sightdistance = 550
 		uDef.cruisealtitude = 120
 	end
@@ -1357,7 +1321,7 @@ if Spring.GetModOptions().air_rework == true then
 		uDef.maxbank = 0.5
 		uDef.maxrudder = uDef.maxrudder * 2
 		uDef.maxaileron = uDef.maxaileron *0.7
-		uDef.health = uDef.health * 2.5
+		uDef.health = uDef.health * 2.3
 		uDef.sightdistance = 520
 		uDef.weapondefs.coradvbomb.burstrate = 0.26
 		uDef.weapondefs.coradvbomb.damage = {
@@ -1370,7 +1334,7 @@ if Spring.GetModOptions().air_rework == true then
 		uDef.maxbank = 0.5
 		uDef.maxrudder = uDef.maxrudder * 2
 		uDef.maxaileron = uDef.maxaileron *0.7
-		uDef.health = uDef.health * 2.5
+		uDef.health = uDef.health * 2.3
 		uDef.sightdistance = 520
 		uDef.weapondefs.armadvbomb.burstrate = 0.35
 		uDef.weapondefs.armadvbomb.burst = 6
@@ -1382,7 +1346,7 @@ if Spring.GetModOptions().air_rework == true then
 		uDef.maxacc = 0.35
 		uDef.maxbank = 0.68
 		uDef.maxrudder = uDef.maxrudder * 2.5
-		uDef.health = uDef.health * 1.5
+		uDef.health = uDef.health * 1.4
 		uDef.sightdistance = 720
 		uDef.cruisealtitude = 120
 	end
@@ -1424,17 +1388,19 @@ if Spring.GetModOptions().air_rework == true then
 		uDef.weapondefs.corrl_missile.startvelocity = 111
 		uDef.weapondefs.corrl_missile.flighttime = 2.6
 	end
-	if name == "armferret" then 
+	if name == "armferret" then
+		uDef.weapondefs.ferret_missile.areaofeffect = 48
 		uDef.weapondefs.ferret_missile.startvelocity = 120
 		uDef.weapondefs.ferret_missile.weaponacceleration = 210
-		uDef.weapondefs.ferret_missile.weaponvelocity = 1100                       
+		uDef.weapondefs.ferret_missile.weaponvelocity = 1100
 	end
-	if name == "cormadsam" then 
+	if name == "cormadsam" then
+		uDef.weapondefs.madsam_missile.areaofeffect = 48
 		uDef.weapondefs.madsam_missile.startvelocity = 120
 		uDef.weapondefs.madsam_missile.weaponacceleration = 210
-		uDef.weapondefs.madsam_missile.weaponvelocity = 1100                       
+		uDef.weapondefs.madsam_missile.weaponvelocity = 1100
 	end
-	if name == "armmercury" then 
+	if name == "armmercury" then
 		uDef.weapondefs.arm_advsam.startvelocity = 140
 		uDef.weapondefs.arm_advsam.stockpile = false
 		uDef.weapondefs.arm_advsam.reloadtime = 25
@@ -1443,7 +1409,7 @@ if Spring.GetModOptions().air_rework == true then
 		uDef.weapondefs.arm_advsam.flighttime = 2.5
 		uDef.weapondefs.arm_advsam.damage.vtol = 1500
 	end
-	if name == "corscreamer" then 
+	if name == "corscreamer" then
 		uDef.weapondefs.cor_advsam.startvelocity = 140
 		uDef.weapondefs.cor_advsam.stockpile = false
 		uDef.weapondefs.cor_advsam.reloadtime = 25
@@ -1452,15 +1418,15 @@ if Spring.GetModOptions().air_rework == true then
 		uDef.weapondefs.cor_advsam.flighttime = 2.5
 		uDef.weapondefs.cor_advsam.damage.vtol = 1500
 	end
-	if name == "armcir" then 
+	if name == "armcir" then
 		uDef.weapondefs.arm_cir.startvelocity = 100
-		uDef.weapondefs.arm_cir.weaponvelocity = 1050    
-		uDef.weapondefs.arm_cir.flighttime = 2.7                  
+		uDef.weapondefs.arm_cir.weaponvelocity = 1050
+		uDef.weapondefs.arm_cir.flighttime = 2.7
 	end
-	if name == "corerad" then 
+	if name == "corerad" then
 		uDef.weapondefs.cor_erad.startvelocity = 100
-		uDef.weapondefs.cor_erad.weaponvelocity = 1050    
-		uDef.weapondefs.cor_erad.flighttime = 2.7                  
+		uDef.weapondefs.cor_erad.weaponvelocity = 1050
+		uDef.weapondefs.cor_erad.flighttime = 2.7
 	end
 	if name == "armjeth" then
 		uDef.weapondefs.armbot_missile.startvelocity = 130
@@ -1572,12 +1538,169 @@ if Spring.GetModOptions().air_rework == true then
 	end
 end
 
+-- Skyshift: Air rework
+if Spring.GetModOptions().skyshift == true then
+	skyshiftUnits = VFS.Include("units/other/Skyshift/skyshiftunits_post.lua")
+	uDef = skyshiftUnits.skyshiftUnitTweaks(name, uDef)
+end
 
+--Lategame Rebalance
+if Spring.GetModOptions().lategame_rebalance == true then
+	if name == "armamb" then
+		uDef.weapondefs.armamb_gun.reloadtime = 2
+		uDef.weapondefs.armamb_gun_high.reloadtime = 7.7
+	end
+	if name == "cortoast" then
+		uDef.weapondefs.cortoast_gun.reloadtime = 2.35
+		uDef.weapondefs.cortoast_gun_high.reloadtime = 8.8
+	end
+	if name == "armpb" then
+		uDef.weapondefs.armpb_weapon.reloadtime = 1.7
+		uDef.weapondefs.armpb_weapon.range = 700
+	end
+	if name == "corvipe" then
+		uDef.weapondefs.vipersabot.reloadtime = 2.1
+		uDef.weapondefs.vipersabot.range = 700
+	end
+	if name == "armanni" then
+		uDef.metalcost = 4000
+		uDef.energycost = 85000
+		uDef.buildtime = 59000
+	end
+	if name == "corbhmth" then
+		uDef.metalcost = 3600
+		uDef.energycost = 40000
+		uDef.buildtime = 70000
+	end
+	if name == "armbrtha" then
+		uDef.metalcost = 5000
+		uDef.energycost = 71000
+		uDef.buildtime = 94000
+	end
+	if name == "corint" then
+		uDef.metalcost = 5100
+		uDef.energycost = 74000
+		uDef.buildtime = 103000
+	end
+	if name == "armvulc" then
+		uDef.metalcost = 75600
+		uDef.energycost = 902400
+		uDef.buildtime = 1680000
+	end
+	if name == "corbuzz" then
+		uDef.metalcost = 73200
+		uDef.energycost = 861600
+		uDef.buildtime = 1680000
+	end
+	if name == "armmar" then
+		uDef.metalcost = 1070
+		uDef.energycost = 23000
+		uDef.buildtime = 28700
+	end
+	if name == "armraz" then
+		uDef.metalcost = 4200
+		uDef.energycost = 75000
+		uDef.buildtime = 97000
+	end
+	if name == "armthor" then
+		uDef.metalcost = 9450
+		uDef.energycost = 255000
+		uDef.buildtime = 265000
+	end
+	if name == "corshiva" then
+		uDef.metalcost = 1800
+		uDef.energycost = 26500
+		uDef.buildtime = 35000
+		uDef.speed = 50.8
+		uDef.weapondefs.shiva_rocket.tracks = true
+		uDef.weapondefs.shiva_rocket.turnrate = 7500
+	end
+	if name == "corkarg" then
+		uDef.metalcost = 2625
+		uDef.energycost = 60000
+		uDef.buildtime = 79000
+	end
+	if name == "cordemon" then
+		uDef.metalcost = 6300
+		uDef.energycost = 94500
+		uDef.buildtime = 94500
+	end
+	if name == "armstil" then
+		uDef.health = 1300
+		uDef.weapondefs.stiletto_bomb.burst = 3
+		uDef.weapondefs.stiletto_bomb.burstrate = 0.2333
+		uDef.weapondefs.stiletto_bomb.damage = {
+			default = 3000
+		}
+	end
+	if name == "armlance" then
+		uDef.health = 1750
+	end
+	if name == "cortitan" then
+		uDef.health = 1800
+	end
+	if name == "armyork" then
+		uDef.weapondefs.mobileflak.reloadtime = 0.8333
+	end
+	if name == "corsent" then
+		uDef.weapondefs.mobileflak.reloadtime = 0.8333
+	end
+	if name == "armaas" then
+		uDef.weapondefs.mobileflak.reloadtime = 0.8333
+	end
+	if name == "corarch" then
+		uDef.weapondefs.mobileflak.reloadtime = 0.8333
+	end
+	if name == "armflak" then
+		uDef.weapondefs.armflak_gun.reloadtime = 0.6
+	end
+	if name == "corflak" then
+		uDef.weapondefs.armflak_gun.reloadtime = 0.6
+	end
+	if name == "armmercury" then
+		uDef.weapondefs.arm_advsam.reloadtime = 11
+		uDef.weapondefs.arm_advsam.stockpile = false
+	end
+	if name == "corscreamer" then
+		uDef.weapondefs.cor_advsam.reloadtime = 11
+		uDef.weapondefs.cor_advsam.stockpile = false
+	end
+	if name == "armfig" then
+		uDef.metalcost = 77
+		uDef.energycost = 3100
+		uDef.buildtime = 3700
+	end
+	if name == "armsfig" then
+		uDef.metalcost = 95
+		uDef.energycost = 4750
+		uDef.buildtime = 5700
+	end
+	if name == "armhawk" then
+		uDef.metalcost = 155
+		uDef.energycost = 6300
+		uDef.buildtime = 9800
+	end
+	if name == "corveng" then
+		uDef.metalcost = 77
+		uDef.energycost = 3000
+		uDef.buildtime = 3600
+	end
+	if name == "corsfig" then
+		uDef.metalcost = 95
+		uDef.energycost = 4850
+		uDef.buildtime = 5400
+	end
+	if name == "corvamp" then
+		uDef.metalcost = 150
+		uDef.energycost = 5250
+		uDef.buildtime = 9250
+	end
+end
 	-- Multipliers Modoptions
 
 	-- Health
 	if uDef.health then
-		local x = Spring.GetModOptions().multiplier_maxdamage
+		local x = modOptions.multiplier_maxdamage
 		if x ~= 1 then
 			if uDef.health*x > 15000000 then
 				uDef.health = 15000000
@@ -1595,7 +1718,7 @@ end
 
 	-- Max Speed
 	if uDef.speed then
-		local x = Spring.GetModOptions().multiplier_maxvelocity
+		local x = modOptions.multiplier_maxvelocity
 		if x ~= 1 then
 			uDef.speed = uDef.speed*x
 			if uDef.maxdec  then
@@ -1609,7 +1732,7 @@ end
 
 	-- Turn Speed
 	if uDef.turnrate then
-		local x = Spring.GetModOptions().multiplier_turnrate
+		local x = modOptions.multiplier_turnrate
 		if x ~= 1 then
 			uDef.turnrate = uDef.turnrate*x
 		end
@@ -1617,7 +1740,7 @@ end
 
 	-- Build Distance
 	if uDef.builddistance then
-		local x = Spring.GetModOptions().multiplier_builddistance
+		local x = modOptions.multiplier_builddistance
 		if x ~= 1 then
 			uDef.builddistance = uDef.builddistance*x
 		end
@@ -1625,7 +1748,7 @@ end
 
 	-- Buildpower
 	if uDef.workertime then
-		local x = Spring.GetModOptions().multiplier_buildpower
+		local x = modOptions.multiplier_buildpower
 		if x ~= 1 then
 			uDef.workertime = uDef.workertime*x
 		end
@@ -1636,19 +1759,19 @@ end
 
 	-- Unit Cost
 	if uDef.metalcost then
-		local x = Spring.GetModOptions().multiplier_metalcost
+		local x = modOptions.multiplier_metalcost
 		if x ~= 1 then
 			uDef.metalcost = math.min(uDef.metalcost*x, 16000000)
 		end
 	end
 	if uDef.energycost then
-		local x = Spring.GetModOptions().multiplier_energycost
+		local x = modOptions.multiplier_energycost
 		if x ~= 1 then
 			uDef.energycost = math.min(uDef.energycost*x, 16000000)
 		end
 	end
 	if uDef.buildtime then
-		local x = Spring.GetModOptions().multiplier_buildtimecost
+		local x = modOptions.multiplier_buildtimecost
 		if x ~= 1 then
 			uDef.buildtime = math.min(uDef.buildtime*x, 16000000)
 		end
@@ -1660,7 +1783,7 @@ end
 	--metalstorage
 	-- Metal Extraction Multiplier
 	if (uDef.extractsmetal and uDef.extractsmetal > 0) and (uDef.customparams.metal_extractor and uDef.customparams.metal_extractor > 0) then
-		local x = Spring.GetModOptions().multiplier_metalextraction * Spring.GetModOptions().multiplier_resourceincome
+		local x = modOptions.multiplier_metalextraction * modOptions.multiplier_resourceincome
 		uDef.extractsmetal = uDef.extractsmetal * x
 		uDef.customparams.metal_extractor = uDef.customparams.metal_extractor * x
 		if uDef.metalstorage then
@@ -1670,14 +1793,14 @@ end
 
 	-- Energy Production Multiplier
 	if uDef.energymake then
-		local x = Spring.GetModOptions().multiplier_energyproduction * Spring.GetModOptions().multiplier_resourceincome
+		local x = modOptions.multiplier_energyproduction * modOptions.multiplier_resourceincome
 		uDef.energymake = uDef.energymake * x
 		if uDef.energystorage then
 			uDef.energystorage = uDef.energystorage * x
 		end
 	end
 	if uDef.windgenerator and uDef.windgenerator > 0 then
-		local x = Spring.GetModOptions().multiplier_energyproduction * Spring.GetModOptions().multiplier_resourceincome
+		local x = modOptions.multiplier_energyproduction * modOptions.multiplier_resourceincome
 		uDef.windgenerator = uDef.windgenerator * x
 		if uDef.customparams.energymultiplier then
 			uDef.customparams.energymultiplier = tonumber(uDef.customparams.energymultiplier) * x
@@ -1689,14 +1812,14 @@ end
 		end
 	end
 	if uDef.tidalgenerator then
-		local x = Spring.GetModOptions().multiplier_energyproduction * Spring.GetModOptions().multiplier_resourceincome
+		local x = modOptions.multiplier_energyproduction * modOptions.multiplier_resourceincome
 		uDef.tidalgenerator = uDef.tidalgenerator * x
 		if uDef.energystorage then
 			uDef.energystorage = uDef.energystorage * x
 		end
 	end
 	if name == "armsolar" or name == "corsolar" then -- special case
-		local x = Spring.GetModOptions().multiplier_energyproduction * Spring.GetModOptions().multiplier_resourceincome
+		local x = modOptions.multiplier_energyproduction * modOptions.multiplier_resourceincome
 		uDef.energyupkeep = uDef.energyupkeep * x
 		if uDef.energystorage then
 			uDef.energystorage = uDef.energystorage * x
@@ -1705,7 +1828,7 @@ end
 
 	-- Energy Conversion Multiplier
 	if uDef.customparams.energyconv_capacity and uDef.customparams.energyconv_efficiency then
-		local x = Spring.GetModOptions().multiplier_energyconversion * Spring.GetModOptions().multiplier_resourceincome
+		local x = modOptions.multiplier_energyconversion * modOptions.multiplier_resourceincome
 		--uDef.customparams.energyconv_capacity = uDef.customparams.energyconv_capacity * x
 		uDef.customparams.energyconv_efficiency = uDef.customparams.energyconv_efficiency * x
 		if uDef.metalstorage then
@@ -1718,28 +1841,28 @@ end
 
 	-- Sensors range
 	if uDef.sightdistance then
-		local x = Spring.GetModOptions().multiplier_losrange
+		local x = modOptions.multiplier_losrange
 		if x ~= 1 then
 			uDef.sightdistance = uDef.sightdistance*x
 		end
 	end
 
 	if uDef.airsightdistance then
-		local x = Spring.GetModOptions().multiplier_losrange
+		local x = modOptions.multiplier_losrange
 		if x ~= 1 then
 			uDef.airsightdistance = uDef.airsightdistance*x
 		end
 	end
 
 	if uDef.radardistance then
-		local x = Spring.GetModOptions().multiplier_radarrange
+		local x = modOptions.multiplier_radarrange
 		if x ~= 1 then
 			uDef.radardistance = uDef.radardistance*x
 		end
 	end
 
 	if uDef.sonardistance then
-		local x = Spring.GetModOptions().multiplier_radarrange
+		local x = modOptions.multiplier_radarrange
 		if x ~= 1 then
 			uDef.sonardistance = uDef.sonardistance*x
 		end
@@ -1794,10 +1917,12 @@ end
 
 -- process weapondef
 function WeaponDef_Post(name, wDef)
+	local modOptions = Spring.GetModOptions()
+
 	if not SaveDefsToCustomParams then
 		-------------- EXPERIMENTAL MODOPTIONS
 		-- Standard Gravity
-		local gravityModOption = Spring.GetModOptions().experimentalstandardgravity
+		local gravityModOption = modOptions.experimentalstandardgravity
 
 		--Spring.Echo(wDef.name,wDef.mygravity)
 		if gravityModOption == "low" then
@@ -1815,10 +1940,9 @@ function WeaponDef_Post(name, wDef)
 		end
 
 
-
 		----EMP rework
 
-		if Spring.GetModOptions().emprework==true then
+		if modOptions.emprework then
 
 			if name == 'empblast' then
 				wDef.areaofeffect = 350
@@ -1842,21 +1966,26 @@ function WeaponDef_Post(name, wDef)
 		end
 
 		--Air rework
-		if Spring.GetModOptions().air_rework == true then
+		if modOptions.air_rework == true then
 			if wDef.weapontype == "BeamLaser" or wDef.weapontype == "LaserCannon" then
-				wDef.damage.vtol = wDef.damage.default * 0.15
+				wDef.damage.vtol = wDef.damage.default * 0.25
 			end
 			if wDef.range == 300 and wDef.reloadtime == 0.4 then --comm lasers
 				wDef.damage.vtol = wDef.damage.default
 			end
 			if wDef.weapontype == "Cannon" and wDef.damage.default ~= nil then
-				wDef.damage.vtol = wDef.damage.default * 0.25
+				wDef.damage.vtol = wDef.damage.default * 0.35
 			end
 		end
 
+		-- Skyshift: Air rework
+		if Spring.GetModOptions().skyshift == true then
+			skyshiftUnits = VFS.Include("units/other/Skyshift/skyshiftunits_post.lua")
+			wDef = skyshiftUnits.skyshiftWeaponTweaks(name, wDef)
+		end
 
 		---- SHIELD CHANGES
-		local shieldModOption = Spring.GetModOptions().experimentalshields
+		local shieldModOption = modOptions.experimentalshields
 
 		if shieldModOption == "absorbplasma" then
 			if wDef.shield and wDef.shield.repulser and wDef.shield.repulser ~= false then
@@ -1878,9 +2007,9 @@ function WeaponDef_Post(name, wDef)
 			end
 		end
 
-		if Spring.GetModOptions().multiplier_shieldpower then
+		if modOptions.multiplier_shieldpower then
 			if wDef.shield then
-				local multiplier = Spring.GetModOptions().multiplier_shieldpower
+				local multiplier = modOptions.multiplier_shieldpower
 				if wDef.shield.power then
 					wDef.shield.power = wDef.shield.power*multiplier
 				end
@@ -1925,6 +2054,10 @@ function WeaponDef_Post(name, wDef)
 					wDef.sizedecay = 0.4 / wDef.stages
 				end
 			end
+		end
+
+		if modOptions.xmas and wDef.weapontype == "StarburstLauncher" and wDef.model and  VFS.FileExists('objects3d\\candycane_'..wDef.model) then
+			wDef.model = 'candycane_'..wDef.model
 		end
 
 		-- prepared to strip these customparams for when we remove old deferred lighting widgets
@@ -1988,16 +2121,12 @@ function WeaponDef_Post(name, wDef)
 
 		ProcessSoundDefaults(wDef)
 	end
-	if Spring.GetModOptions().unba == true then
-		unbaUnits = VFS.Include("unbaconfigs/unbaunits_post.lua")
-		wDef = unbaUnits.unbaWeaponTweaks(name, wDef)
-	end
 
 	-- Multipliers
 
 	-- Weapon Range
 	if true then -- dumb way to keep the x local here
-		local x = Spring.GetModOptions().multiplier_weaponrange
+		local x = modOptions.multiplier_weaponrange
 		if x ~= 1 then
 			if wDef.range then
 				wDef.range = wDef.range*x
@@ -2021,7 +2150,7 @@ function WeaponDef_Post(name, wDef)
 
 	-- Weapon Damage
 	if true then -- dumb way to keep the x local here
-		local x = Spring.GetModOptions().multiplier_weapondamage
+		local x = modOptions.multiplier_weapondamage
 		if x ~= 1 then
 			if wDef.damage then
 				for damageClass, damageValue in pairs(wDef.damage) do
@@ -2070,27 +2199,11 @@ end
 
 -- process modoptions (last, because they should not get baked)
 function ModOptions_Post (UnitDefs, WeaponDefs)
-	local map_tidal = Spring.GetModOptions().map_tidal
-
-	if map_tidal and map_tidal ~= "unchanged" then
-		for id, unitDef in pairs(UnitDefs) do
-			if unitDef.tidalgenerator == 1 then
-				unitDef.tidalgenerator = 0
-				if map_tidal == "low" then
-					unitDef.energymake = 13
-				elseif map_tidal == "medium" then
-					unitDef.energymake = 18
-				elseif map_tidal == "high" then
-					unitDef.energymake = 23
-				end
-			end
-		end
-	end
 
 	-- transporting enemy coms
 	if Spring.GetModOptions().transportenemy == "notcoms" then
 		for name,ud in pairs(UnitDefs) do
-			if name == "armcom" or name == "corcom" or name == "armdecom" or name == "cordecom" then
+			if ud.customparams.iscommander then
 				ud.transportbyenemy = false
 			end
 		end

@@ -61,7 +61,7 @@ return {
 			[16] = "corgate",
 			[17] = "cortoast",
 			[18] = "corvipe",
-			[19] = "cordoom",
+			[19] = "legbastion",
 			[20] = "corflak",
 			[21] = "corscreamer",
 			[22] = "cortron",
@@ -72,7 +72,6 @@ return {
 			[27] = "legvp",
 			[28] = "legavp",
 			[29] = "leggant",
-			[30] = "coruwageo",
 		},
 		customparams = {
 			unitgroup = 'buildert2',

@@ -11,6 +11,9 @@ function widget:GetInfo()
 	}
 end
 
+
+local spTestBuildOrder = Spring.TestBuildOrder
+
 local buildQueue = {}
 local selBuildQueueDefID
 local facingMap = {south=0, east=1, north=2, west=3}
@@ -19,6 +22,7 @@ local isSpec = Spring.GetSpectatingState()
 local myTeamID = Spring.GetMyTeamID()
 local preGamestartPlayer = Spring.GetGameFrame() == 0 and not isSpec
 local startDefID = Spring.GetTeamRulesParam(myTeamID, 'startUnit')
+local metalMap = false
 
 local unitshapes = {}
 
@@ -81,8 +85,13 @@ end
 ------------------------------------------
 ---          QUEUE HANDLING            ---
 ------------------------------------------
+local BUILDING_GRID_FORCE_SHOW_REASON = "gui_pregame_build"
 local function setPreGamestartDefID(uDefID)
 	selBuildQueueDefID = uDefID
+
+	if WG['buildinggrid'] ~= nil and WG['buildinggrid'].setForceShow ~= nil then
+		WG['buildinggrid'].setForceShow(BUILDING_GRID_FORCE_SHOW_REASON, uDefID ~= nil)
+	end
 
 	local isMex = UnitDefs[uDefID] and UnitDefs[uDefID].extractsMetal > 0
 
@@ -153,6 +162,8 @@ function widget:Initialize()
 		end
 	end
 
+	metalMap = WG["resource_spot_finder"].isMetalMap
+
 	WG['pregame-build'] = {}
 	WG['pregame-build'].getPreGameDefID = function()
 		return selBuildQueueDefID
@@ -218,9 +229,9 @@ local function DrawBuilding(buildData, borderColor, drawRanges)
 							 { v = { bx - bw, by, bz + bh } } })
 
 	if drawRanges then
-		local isMex = UnitDefs[uDefID] and UnitDefs[uDefID].extractsMetal > 0
+		local isMex = UnitDefs[bDefID] and UnitDefs[bDefID].extractsMetal > 0
 		if isMex then
-			gl.Color(1.0, 0.3, 0.3, 0.7)
+			gl.Color(1.0, 0.0, 0.0, 0.5)
 			gl.DrawGroundCircle(bx, by, bz, Game.extractorRadius, 50)
 		end
 
@@ -253,10 +264,14 @@ function widget:MousePress(x, y, button)
 
 		if selBuildQueueDefID then
 			if button == 1 then
-				local mexSnapPosition = WG.MexSnap and WG.MexSnap.curPosition
-				if mexSnapPosition then
-					pos = { mexSnapPosition.x, mexSnapPosition.y, mexSnapPosition.z }
+				local isMex = UnitDefs[selBuildQueueDefID] and UnitDefs[selBuildQueueDefID].extractsMetal > 0
+				if WG.ExtractorSnap then
+					local snapPos = WG.ExtractorSnap.position
+					if snapPos then
+						pos = { snapPos.x, snapPos.y, snapPos.z }
+					end
 				end
+
 				if not pos then
 					return
 				end
@@ -289,11 +304,27 @@ function widget:MousePress(x, y, button)
 							end
 						end
 
+						-- Special handling to check if mex position is valid
+						local spot = WG["resource_spot_finder"].GetClosestMexSpot(bx, bz)
+						local validPos = spot and WG["resource_spot_finder"].IsMexPositionValid(spot, bx, bz) or false
+						local spotIsTaken = WG["resource_spot_builder"].SpotHasExtractorQueued(spot)
+						if isMex and not metalMap and (not validPos or spotIsTaken) then
+							return true
+						end
+
 						if not anyClashes then
 							buildQueue[#buildQueue + 1] = buildData
 						end
 					else
-						buildQueue = { buildData }
+						-- don't place mex if the spot is not valid
+						if isMex then
+							if WG.ExtractorSnap.position or metalMap then
+								buildQueue = { buildData }
+							end
+						else
+							buildQueue = { buildData }
+						end
+
 					end
 
 					if not shift then
@@ -326,7 +357,6 @@ function widget:DrawWorld()
 	-- Avoid unnecessary overhead after buildqueue has been setup in early frames
 	if Spring.GetGameFrame() > 0 then
 		widgetHandler:RemoveWidgetCallIn('DrawWorld', self)
-
 		return
 	end
 
@@ -408,10 +438,20 @@ function widget:DrawWorld()
 
 	-- Draw selected building
 	if selBuildData then
-		if Spring.TestBuildOrder(selBuildQueueDefID, selBuildData[2], selBuildData[3], selBuildData[4], selBuildData[5]) ~= 0 then
-			DrawBuilding(selBuildData, borderValidColor, true)
+		-- mmm, convoluted logic. Pregame handling is hell
+		local isMex = UnitDefs[selBuildQueueDefID] and UnitDefs[selBuildQueueDefID].extractsMetal > 0
+		local testOrder = spTestBuildOrder(selBuildQueueDefID, selBuildData[2], selBuildData[3], selBuildData[4], selBuildData[5]) ~= 0
+		if not isMex then
+			local color = testOrder and borderValidColor or borderInvalidColor
+			DrawBuilding(selBuildData, color, true)
+		elseif isMex then
+			if WG.ExtractorSnap.position or metalMap then
+				DrawBuilding(selBuildData, borderValidColor, true)
+			else
+				DrawBuilding(selBuildData, borderInvalidColor, true)
+			end
 		else
-			DrawBuilding(selBuildData, borderInvalidColor, true)
+			DrawBuilding(selBuildData, borderValidColor, true)
 		end
 	end
 
@@ -424,6 +464,7 @@ function widget:GameFrame(n)
 	-- Avoid unnecessary overhead after buildqueue has been setup in early frames
 	if #buildQueue == 0 then
 		widgetHandler:RemoveWidgetCallIn('GameFrame', self)
+		widgetHandler:RemoveWidget(self)
 		return
 	end
 
@@ -473,9 +514,16 @@ function widget:GameStart()
 end
 
 function widget:Shutdown()
+	-- Stop drawing all ghosts
+	for id, _ in pairs(unitshapes) do
+		removeUnitShape(id)
+	end
 	widgetHandler:DeregisterGlobal(widget, 'GetPreGameDefID')
 	widgetHandler:DeregisterGlobal(widget, 'GetBuildQueue')
 	WG['pregame-build'] = nil
+	if WG['buildinggrid'] ~= nil and WG['buildinggrid'].setForceShow ~= nil then
+		WG['buildinggrid'].setForceShow(BUILDING_GRID_FORCE_SHOW_REASON, false)
+	end
 end
 
 function widget:GetConfigData()

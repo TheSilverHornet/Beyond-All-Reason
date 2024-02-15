@@ -12,6 +12,7 @@ end
 
 
 local filename = "unitlist.csv"
+local iconTypes = VFS.Include("gamedata/icontypes.lua")
 
 
 local function round(num, numDecimalPlaces)
@@ -21,9 +22,6 @@ local function round(num, numDecimalPlaces)
 end
 
 function widget:Initialize()
-    if Script.LuaRules('GetIconTypes') then
-        iconTypesMap = Script.LuaRules.GetIconTypes()
-    end
     local file = assert(io.open(filename,'w'), "Unable to save file")
 
     local columnSeparator = ';'
@@ -52,7 +50,7 @@ function widget:Initialize()
         'hover'..columnSeparator..
         'ship'..columnSeparator..
         'tank'..columnSeparator..
-        'kbot'..columnSeparator..
+        'bot'..columnSeparator..
         'building'..columnSeparator..
         'dps'..columnSeparator..
         'weaponrange'..columnSeparator..
@@ -299,7 +297,7 @@ function widget:Initialize()
                     unitDef.translatedHumanName..columnSeparator..
                     unitDef.translatedTooltip..columnSeparator..
                     description..columnSeparator..
-                    (iconTypesMap[unitDef.iconType] and string.gsub(string.gsub(iconTypesMap[unitDef.iconType], 'icons/', ''), '.png', '') or '')..columnSeparator..
+                    (iconTypes[unitDef.iconType] and iconTypes[unitDef.iconType].bitmap and string.gsub(string.gsub(iconTypes[unitDef.iconType].bitmap, 'icons/', ''), '.png', '') or '')..columnSeparator..
                     round(unitDef.height, 0)..columnSeparator..
                     unitDef.metalCost..columnSeparator..
 					unitDef.energyCost..columnSeparator..
@@ -315,7 +313,7 @@ function widget:Initialize()
                     (unitDef.modCategories["hover"] and '1' or '')..columnSeparator..
                     (unitDef.modCategories["ship"] and '1' or '')..columnSeparator..
                     (unitDef.modCategories["tank"] and '1' or '')..columnSeparator..
-                    (unitDef.modCategories["kbot"] and '1' or '')..columnSeparator..
+                    (unitDef.modCategories["bot"] and '1' or '')..columnSeparator..
                     ((unitDef.isBuilding or unitDef.isFactory or unitDef.speed==0) and '1' or '')..columnSeparator..
                     dps..columnSeparator..
                     weaponRange..columnSeparator..

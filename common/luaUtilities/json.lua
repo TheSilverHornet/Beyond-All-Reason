@@ -3,7 +3,7 @@
 -- json Module.
 -- Author: Craig Mason-Jones
 -- Homepage: http://json.luaforge.net/
--- Version: 0.9.50
+-- Version: 0.9.50.1
 -- This module is released under the MIT License (MIT).
 -- Please see LICENCE.txt for details.
 --
@@ -18,6 +18,7 @@
 --   compat-5.1 if using Lua 5.0
 --
 -- CHANGELOG
+--   0.9.50.1 BAR changes by Beherith: fix issue when decoding empty arrays.
 --	 0.9.50 Radical performance improvement on decode from Eike Decker. Many thanks!
 --	 0.9.40 Changed licence to MIT License (MIT)
 --   0.9.20 Introduction of local Lua functions for private functions (removed _ function prefix). 
@@ -62,7 +63,7 @@ local isEncodable
 --- Encodes an arbitrary Lua object / variable.
 -- @param v The Lua object / variable to be JSON encoded.
 -- @return String containing the JSON encoding in internal Lua string format (i.e. not unicode)
-function encode (v)
+local function encode (v)
   -- Handle nil values
   if v==nil then
     return "null"
@@ -115,7 +116,7 @@ end
 --- Decodes a JSON string and returns the decoded value as a Lua data structure / value.
 -- @param s The string to scan.
 -- @return Lua objectthat was scanned, as a Lua table / string / number / boolean or nil.
-function decode(s)
+local function decode(s)
 	-- Function is re-defined below after token and other items are created.
 	-- Just defined here for code neatness.
 	return null
@@ -123,7 +124,7 @@ end
 
 --- The null function allows one to specify a null value in an associative array (which is otherwise
 -- discarded if you set the value with 'nil' in Lua. Simply set t = { first=json.null }
-function null()
+local function null()
   return null -- so json.null() will also return null ;-)
 end
 
@@ -177,12 +178,14 @@ function isEncodable(o)
   return (t=='string' or t=='boolean' or t=='number' or t=='nil' or t=='table') or (t=='function' and o==null) 
 end
 
+local instrumentedDecode
 -- Radical performance improvement for decode from Eike Decker!
 do
 	local type = base.type
 	local error = base.error
 	local assert = base.assert
 	local print = base.print
+	if Spring and Spring.Echo then print = Spring.Echo end
 	local tonumber = base.tonumber
 	-- initialize some values to be used in decoding function
 	
@@ -239,7 +242,8 @@ do
 		tt_comment_start,
 		tt_comment_middle,
 		tt_ignore --< tt_ignore is special - marked tokens will be tt_ignored
-			= {},{},{},{},{},{},{},{},{},{},{},{},{}
+			= {},{},{},{},{},{},{},{},{},{},{},{},{},{}
+			--= {myname = "tt_object_key"},{myname = "tt_object_colon"},{myname = "tt_object_value"},{myname = "tt_doublequote_string"},{myname = "tt_singlequote_string"},{myname = "tt_array_value"},{myname = "tt_array_seperator"},{myname = "tt_numeric"},{myname = "tt_boolean"},{myname = "tt_null"},{myname = "tt_comment_start"},{myname = "tt_comment_middle"},{myname = "tt_ignore"}
 	
 	-- strings to be used in certain token tables
 	local strchars = "" -- all valid string characters (all except newlines)
@@ -261,7 +265,7 @@ do
 ]]--
 
 	-- obj key reader, expects the end of the object or a quoted string as key
-	init_token_table (tt_object_key) "object (' or \" or } or , expected)" 
+	init_token_table (tt_object_key) "tt_object_key: object (' or \" or } or , expected)" 
 		:link(tt_singlequote_string) :to "'"
 		:link(tt_doublequote_string) :to '"'
 		:link(true)                  :to "}"
@@ -271,13 +275,13 @@ do
 	
 	
 	-- after the key, a colon is expected (or comment)
-	init_token_table (tt_object_colon) "object (: expected)" 
+	init_token_table (tt_object_colon) "tt_object_colon: object (: expected)" 
 		:link(tt_object_value)       :to ":"  
 		:link(tt_comment_start)      :to "/" 
 		:link(tt_ignore)             :to" \t\r\n"
 		
 	-- as values, anything is possible, numbers, arrays, objects, boolean, null, strings
-	init_token_table (tt_object_value) "object ({ or [ or ' or \" or number or boolean or null expected)"
+	init_token_table (tt_object_value) "tt_object_value: object ({ or [ or ' or \" or number or boolean or null expected)"
 		:link(tt_object_key)         :to "{" 
 		:link(tt_array_seperator)    :to "[" 
 		:link(tt_singlequote_string) :to "'" 
@@ -287,9 +291,10 @@ do
 		:link(tt_null)               :to "n" 
 		:link(tt_comment_start)      :to "/" 
 		:link(tt_ignore)             :to " \t\r\n"
+		--:link(true)					 :to "]"
 		
 	-- token tables for reading strings
-	init_token_table (tt_doublequote_string) "double quoted string"
+	init_token_table (tt_doublequote_string) "tt_doublequote_string: double quoted string"
 		:link(tt_ignore)             :to (strchars)
 		:link(c_esc)                 :to "\\"
 		:link(true)                  :to '"'
@@ -300,14 +305,14 @@ do
 		:link(true)                  :to "'"
 		
 	-- array reader that expects termination of the array or a comma that indicates the next value
-	init_token_table (tt_array_value) "array (, or ] expected)"
+	init_token_table (tt_array_value) "tt_array_value: array (, or ] expected)"
 		:link(tt_array_seperator)    :to "," 
 		:link(true)                  :to "]"
 		:link(tt_comment_start)      :to "/" 
 		:link(tt_ignore)             :to " \t\r\n"
 	
 	-- a value, pretty similar to tt_object_value
-	init_token_table (tt_array_seperator) "array ({ or [ or ' or \" or number or boolean or null expected)"
+	init_token_table (tt_array_seperator) "tt_array_seperator: array ({ or [ or ' or \" or number or boolean or null expected)"
 		:link(tt_object_key)         :to "{" 
 		:link(tt_array_seperator)    :to "[" 
 		:link(tt_singlequote_string) :to "'" 
@@ -317,9 +322,10 @@ do
 		:link(tt_boolean)            :to "tf" 
 		:link(tt_null)               :to "n" 
 		:link(tt_ignore)             :to " \t\r\n"
+		:link(true)    :to "]" 
 	
 	-- valid number tokens
-	init_token_table (tt_numeric) "number"
+	init_token_table (tt_numeric) "tt_numeric: number"
 		:link(tt_ignore)             :to "0123456789.-Ee"
 		
 	-- once a comment has been started with /, a * is expected
@@ -469,7 +475,12 @@ do
 			i = i or 1
 			-- loop until ...
 			while true do
-				o[i] = read_value(next_token(tt_array_seperator),tt_array_seperator)
+				
+				-- At this point, the array might be empty!
+				local next_tokenvalue = next_token(tt_array_seperator)
+				if next_tokenvalue == true then return o end
+				
+				o[i] = read_value(next_tokenvalue, tt_array_seperator)
 				local t = next_token(tt_array_value)
 				if t == tt_comment_start then
 					t = read_comment(tt_array_value)
@@ -490,6 +501,7 @@ do
 		
 		-- object key reading, might also terminate the object
 		function read_object_key (o)
+			
 			while true do
 				local t = next_token(tt_object_key)
 				if t == tt_comment_start then
@@ -518,11 +530,11 @@ do
 		return r
 	end
 
-	function instrumentedDecode (js_string)
-		tracy.ZoneBegin()
-		local ret = decode(js_string)
-		tracy.ZoneEnd()
-		return ret
+	instrumentedDecode = function (js_string)
+		if tracy then tracy.ZoneBeginN("Json:Decode") end 
+		local localret = decode(js_string)
+		if tracy then tracy.ZoneEnd() end 
+		return localret
 	end
 end
 
