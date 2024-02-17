@@ -17,7 +17,6 @@ return {
 		explodeas = "hugeBuildingexplosiongeneric-uw",
 		footprintx = 9,
 		footprintz = 9,
-		icontype = "building",
 		idleautoheal = 5,
 		idletime = 1800,
 		health = 16000,
@@ -36,6 +35,7 @@ return {
 			[1] = "armbanth",
 			[2] = "armmar",
 			[3] = "armcroc",
+			[4] = "armlun",
 		},
 		customparams = {
 			usebuildinggrounddecal = true,

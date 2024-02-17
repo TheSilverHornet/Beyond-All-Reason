@@ -20,7 +20,6 @@ return {
 		explodeas = "smallExplosionGeneric-uw",
 		footprintx = 4,
 		footprintz = 4,
-		icontype = "sea",
 		idleautoheal = 5,
 		idletime = 1800,
 		health = 1110, --445,
@@ -53,6 +52,8 @@ return {
 			[11] = "armatl",
 			[12] = "armfflak",
 			[13] = "armkraken",
+			[14] = "armuwageo",
+			[15] = "armfasp",
 		},
 		customparams = {
 			unitgroup = 'buildert2',

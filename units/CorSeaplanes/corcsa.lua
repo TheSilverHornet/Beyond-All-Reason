@@ -21,7 +21,6 @@ return {
 		footprintx = 2,
 		footprintz = 2,
 		hoverattack = true,
-		icontype = "air",
 		idleautoheal = 5,
 		idletime = 1800,
 		health = 435,
@@ -81,6 +80,9 @@ return {
 			[41] = "corfhlt",
 			[42] = "corfrt",
 			[43] = "cortl",
+			[44] = "coruwgeo",
+			[45] = "corasp",
+			[46] = "corfasp",
 		},
 		customparams = {
 			unitgroup = 'builder',

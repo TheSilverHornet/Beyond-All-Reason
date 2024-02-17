@@ -17,7 +17,6 @@ return {
 		explodeas = "hugeBuildingexplosiongeneric-uw",
 		footprintx = 9,
 		footprintz = 9,
-		icontype = "building",
 		idleautoheal = 5,
 		idletime = 1800,
 		health = 17800,
@@ -37,8 +36,9 @@ return {
 		buildoptions = {
 			[1] = "corkorg",
 			[2] = "corshiva",
-			[3] = "corseal",
+			[3] = "corsala",
 			[4] = "corparrow",
+			[5] = "corsok",
 		},
 		customparams = {
 			usebuildinggrounddecal = true,

@@ -19,7 +19,6 @@ return {
 		explodeas = "largeBuildingexplosiongeneric",
 		footprintx = 9,
 		footprintz = 9,
-		icontype = "building",
 		idleautoheal = 5,
 		idletime = 1800,
 		mass = 200000,
@@ -48,7 +47,6 @@ return {
 			removestop = true,
 			removewait = true,
 			subfolder = "corbuildings/landutil",
-			techlevel = 2,
 		},
 		featuredefs = {
 			dead = {

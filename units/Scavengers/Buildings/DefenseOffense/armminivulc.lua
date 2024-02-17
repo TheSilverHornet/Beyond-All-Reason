@@ -16,7 +16,6 @@ return {
 		explodeas = "hugeBuildingexplosiongeneric",
 		footprintx = 3,
 		footprintz = 3,
-		icontype = "building",
 		idleautoheal = 5,
 		idletime = 1800,
 		health = 6700,
@@ -46,8 +45,8 @@ return {
 			dead = {
 				blocking = true,
 				category = "corpses",
-				collisionvolumeoffsets = "-30.100944519 -5.74996727295 19.3314819336",
-				collisionvolumescales = "169.401870728 123.486465454 147.862945557",
+				collisionvolumeoffsets = "0 0 0",
+				collisionvolumescales = "32 64 32",
 				collisionvolumetype = "Box",
 				damage = 3000,
 				energy = 0,

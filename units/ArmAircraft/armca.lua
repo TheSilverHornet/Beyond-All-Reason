@@ -20,7 +20,6 @@ return {
 		footprintx = 2,
 		footprintz = 2,
 		hoverattack = true,
-		icontype = "air",
 		idleautoheal = 5,
 		idletime = 1800,
 		health = 156,
@@ -68,6 +67,8 @@ return {
 			[29] = "armjamt",
 			[30] = "armjuno",
 			[31] = "armsy",
+			[32] = "armuwgeo",
+			[33] = "armfasp",
 		},
 		customparams = {
 			unitgroup = 'builder',
