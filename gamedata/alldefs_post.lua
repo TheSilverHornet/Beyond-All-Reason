@@ -365,9 +365,9 @@ function UnitDef_Post(name, uDef)
 			local numBuildoptions = #uDef.buildoptions
 			uDef.buildoptions[numBuildoptions+1] = "corvac" --corprinter
 		end
-		
+
 		--Drone Carriers
-		
+
 		if name == "armasy" then
 			local numBuildoptions = #uDef.buildoptions
 			uDef.buildoptions[numBuildoptions+1] = "armdronecarry"
@@ -376,7 +376,7 @@ function UnitDef_Post(name, uDef)
 			local numBuildoptions = #uDef.buildoptions
 			uDef.buildoptions[numBuildoptions+1] = "cordronecarry"
 		end
-		
+
 	end
 
 	-- Add scav units to normal factories and builders
@@ -451,9 +451,11 @@ function UnitDef_Post(name, uDef)
 		elseif name == "coracsub" then
 			local numBuildoptions = #uDef.buildoptions
 			uDef.buildoptions[numBuildoptions+1] = "corfgate"
+			uDef.buildoptions[numBuildoptions+2] = "cornanotc2plat"
 		elseif name == "armacsub" then
 			local numBuildoptions = #uDef.buildoptions
 			uDef.buildoptions[numBuildoptions+1] = "armfgate"
+			uDef.buildoptions[numBuildoptions+2] = "armnanotc2plat"
 		elseif name == "armaca" or name == "armack" or name == "armacv" then
 			local numBuildoptions = #uDef.buildoptions
 			uDef.buildoptions[numBuildoptions+1] = "armapt3"
@@ -1538,6 +1540,42 @@ if modOptions.air_rework == true then
 	end
 end
 
+-- Skyshift: Air rework
+if Spring.GetModOptions().skyshift == true then
+	skyshiftUnits = VFS.Include("units/other/Skyshift/skyshiftunits_post.lua")
+	uDef = skyshiftUnits.skyshiftUnitTweaks(name, uDef)
+end
+
+if Spring.GetModOptions().proposed_unit_reworks == true then
+	if name == "armmart" then
+		uDef.health = 1070
+		uDef.maxacc = 0.033
+		uDef.maxdec = 0.066
+		uDef.speed = 60
+		uDef.weapondefs.arm_artillery.range = 810
+	end
+	if name == "cormart" then
+		uDef.health = 1200
+		uDef.maxacc = 0.03
+		uDef.maxdec = 0.06
+		uDef.speed = 58
+		uDef.weapondefs.cor_artillery.range = 790
+	end
+	if name == "armstil" then
+		uDef.metalcost = 460
+		uDef.energycost = 38000
+		uDef.buildtime = 32000
+		uDef.health = 1880
+		uDef.weapondefs.stiletto_bomb.areaofeffect = 160
+		uDef.weapondefs.stiletto_bomb.burst = 3
+		uDef.weapondefs.stiletto_bomb.burstrate = 0.2333
+		uDef.weapondefs.stiletto_bomb.damage = {
+			default = 6000
+		}
+		uDef.weapondefs.stiletto_bomb.paralyzetime = 20
+	end
+end
+
 --Lategame Rebalance
 if Spring.GetModOptions().lategame_rebalance == true then
 	if name == "armamb" then
@@ -1972,6 +2010,11 @@ function WeaponDef_Post(name, wDef)
 			end
 		end
 
+		-- Skyshift: Air rework
+		if Spring.GetModOptions().skyshift == true then
+			skyshiftUnits = VFS.Include("units/other/Skyshift/skyshiftunits_post.lua")
+			wDef = skyshiftUnits.skyshiftWeaponTweaks(name, wDef)
+		end
 
 		---- SHIELD CHANGES
 		local shieldModOption = modOptions.experimentalshields
