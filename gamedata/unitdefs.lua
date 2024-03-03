@@ -66,6 +66,10 @@ if Spring.GetTeamList then
 		end
 	end
 end
+if Spring.GetModOptions().ruins ~= "disabled" then
+	legionEnabled = true
+	scavengersEnabled = true
+end
 for _, filename in ipairs(luaFiles) do
 	if legionEnabled or not filename:find('legion') then
 		if scavengersEnabled or not filename:find('scavengers') then
