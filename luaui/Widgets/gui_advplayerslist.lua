@@ -1704,7 +1704,7 @@ function CreateLists(onlyMainList, onlyMainList2, onlyMainList3)
         UpdateRecentBroadcasters()
         UpdateAlliances()
     end
-    if not onlyMainList3 then
+    if onlyMainList or onlyMainList2 then
         GetAliveAllyTeams()
     end
     if onlyMainList2 or onlyMainList3 then
@@ -3558,7 +3558,7 @@ function CheckPlayersChange()
         -- sorts the list again if change needs it
         SortList()
         SetModulesPositionX()    -- change the X size if needed (change of widest name)
-        forceMainListRefresh = true
+        CreateLists()
     end
 end
 
@@ -3675,8 +3675,9 @@ function widget:Update(delta)
                 if player[j].allyteam == myAllyTeamID then
                     if player[j].totake then
                         player[j] = CreatePlayerFromTeam(player[j].team)
-                        SortList()
-                        SetModulesPositionX()
+                        --SortList()
+                        --SetModulesPositionX()
+                        forceMainListRefresh = true
                     end
                 end
             end

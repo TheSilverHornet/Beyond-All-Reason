@@ -59,7 +59,7 @@ return {
 		upright = true,
 		workertime = 350,--400,
 		buildoptions = {
-			[1] = "corsolar",
+			[1] = "legsolar",
 			[2] = "legwin",
 			[3] = "cormstor",
 			[4] = "corestor",
@@ -70,7 +70,7 @@ return {
 			[9] = "legap",
 			[10] = "coreyes",
 			[11] = "corrad",
-			[12] = "corscavdrag",
+			[12] = "legdrag",
 			[13] = "corllt",
 			[14] = "corrl",
 			[15] = "cordl",

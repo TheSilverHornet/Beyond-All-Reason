@@ -2095,6 +2095,26 @@ local icontypes = {
 		bitmap = "icons/vehicle_worker.png",
 		size = 0.99749994
 	},
+	legdrag = {
+		bitmap = "icons/wall_0.4.png",
+		size = 0.41999999
+	},
+	legdtf = {
+		bitmap = "icons/wall_0.4.png",
+		size = 0.41999999
+	},
+	legdtl = {
+		bitmap = "icons/wall_0.4.png",
+		size = 0.41999999
+	},
+	legdtm = {
+		bitmap = "icons/wall_0.4.png",
+		size = 0.41999999
+	},
+	legforti = {
+		bitmap = "icons/wall_0.4.png",
+		size = 0.41999999
+	},
 	legdefcarryt1 = {
 		bitmap = "icons/legdefcarryt1.png",
 		size = 1.65999997
@@ -2231,6 +2251,10 @@ local icontypes = {
 		bitmap = "icons/kbot_t2_shotgun.png",
 		size = 1.60000002
 	},
+	legsolar = {
+		bitmap = "icons/energy1_1.0.png",
+		size = 1.04999995
+	},	
 	legsrail = {
 		bitmap = "icons/allterrain_t2_rail.png",
 		size = 1.85000002
