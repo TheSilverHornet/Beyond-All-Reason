@@ -2363,24 +2363,28 @@ function DrawResources(energy, energyStorage, energyShare, energyConversion, met
     end
 end
 
-local function formatRes(number)
-    if number < 1000 then
-        return string.format("%d", number)
-    else
-        return string.format("%.1fk", number / 1000)
-    end
-end
-
 function DrawIncome(energy, metal, posY, dead)
     local fontsize = dead and 4.5 or 8.5
     local sizeMult = playerScale + ((1-playerScale)*0.33)
     fontsize = fontsize * sizeMult
     font:Begin()
     if energy > 0 then
-        font:Print('\255\255\255\050'..formatRes(math.floor(energy)), m_income.posX + widgetPosX + m_income.width - 2, posY + ((fontsize*0.2)*sizeMult) + (dead and 1 or 0), fontsize, "or")
+        font:Print(
+			'\255\255\255\050' .. string.formatSI(math.floor(energy)),
+			m_income.posX + widgetPosX + m_income.width - 2,
+			posY + ((fontsize*0.2)*sizeMult) + (dead and 1 or 0),
+			fontsize,
+			"or"
+		)
     end
     if metal > 0 then
-        font:Print('\255\235\235\235'..formatRes(math.floor(metal)), m_income.posX + widgetPosX + m_income.width - 2, posY + ((fontsize*1.15)*sizeMult) + (dead and 1 or 0), fontsize, "or")
+        font:Print(
+			'\255\235\235\235' .. string.formatSI(math.floor(metal)),
+			m_income.posX + widgetPosX + m_income.width - 2,
+			posY + ((fontsize*1.15)*sizeMult) + (dead and 1 or 0),
+			fontsize,
+			"or"
+		)
     end
     font:End()
 end
@@ -3465,9 +3469,6 @@ function CheckPlayersChange()
                         sorting = true
                     end
                 end
-                player[i].name = nil
-                player[i] = {}
-                sorting = true
             end
         elseif active and name ~= nil then
             if spec ~= player[i].spec then
@@ -3501,7 +3502,7 @@ function CheckPlayersChange()
             if player[i].name == nil then
                 player[i] = CreatePlayer(i)
                 if player[i].name ~= nil then
-                    doPlayerUpdate()
+                    forceMainListRefresh = true
                 end
             end
             if allyTeamID ~= player[i].allyteam then
