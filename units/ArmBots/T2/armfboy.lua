@@ -23,7 +23,7 @@ return {
 		speed = 30.0,
 		maxwaterdepth = 25,
 		movementclass = "HBOT4",
-		nochasecategory = "VTOL",
+		nochasecategory = "VTOL GROUNDSCOUT",
 		objectname = "Units/ARMFBOY.s3o",
 		power = 5950, --compensation for XP rank with high AoE weapons
 		pushresistant = true,
@@ -116,6 +116,8 @@ return {
 				gravityaffected = "true",
 				impulseboost = 0.4,
 				impulsefactor = 0.4,
+				leadlimit = 128,
+				proximityPriority  = -0.3,
 				name = "Heavy AoE g2g plasma cannon",
 				noselfdamage = true,
 				range = 700,
@@ -135,10 +137,11 @@ return {
 		},
 		weapons = {
 			[1] = {
-				badtargetcategory = "VTOL",
+				badtargetcategory = "VTOL GROUNDSCOUT",
 				def = "ARM_FATBOY_NOTALASER",
 				onlytargetcategory = "SURFACE",
 				fastautoretargeting = true,
+				weaponAimAdjustPriority = 125,
 			},
 		},
 	},

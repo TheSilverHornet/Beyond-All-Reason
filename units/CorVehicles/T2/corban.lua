@@ -23,6 +23,7 @@ return {
 		speed = 54.0,
 		maxwaterdepth = 20,
 		movementclass = "HTANK4",
+		nochasecategory = "VTOL GROUNDSCOUT",
 		objectname = "Units/CORBAN.s3o",
 		script = "Units/CORBAN.cob",
 		seismicsignature = 0,
@@ -152,6 +153,10 @@ return {
 				weapontimer = 5,
 				weapontype = "MissileLauncher",
 				weaponvelocity = 650,
+				customparams = {
+					speceffect = "retarget",
+					when = "always",
+				},
 				damage = {
 					default = 1000,
 					subs = 500,
@@ -160,11 +165,12 @@ return {
 		},
 		weapons = {
 			[1] = {
-				badtargetcategory = "VTOL",
+				badtargetcategory = "VTOL GROUNDSCOUT",
 				def = "BANISHER",
 				maindir = "0 0 1",
 				maxangledif = 270,
 				onlytargetcategory = "NOTSUB",
+				fastautoretargeting = true,
 			},
 		},
 	},

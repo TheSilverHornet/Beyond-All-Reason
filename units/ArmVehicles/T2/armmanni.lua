@@ -24,7 +24,7 @@ return {
 		speed = 42.0,
 		maxwaterdepth = 0,
 		movementclass = "HTANK4",
-		nochasecategory = "VTOL",
+		nochasecategory = "VTOL GROUNDSCOUT",
 		objectname = "Units/ARMMANNI.s3o",
 		script = "Units/ARMMANNI.cob",
 		seismicsignature = 0,
@@ -151,7 +151,7 @@ return {
 		},
 		weapons = {
 			[1] = {
-				badtargetcategory = "VTOL",
+				badtargetcategory = "VTOL GROUNDSCOUT",
 				def = "ATAM",
 				maindir = "0 0 1",
 				maxangledif = 180,

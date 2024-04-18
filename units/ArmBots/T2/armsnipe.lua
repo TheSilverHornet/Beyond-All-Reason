@@ -25,7 +25,7 @@ return {
 		maxwaterdepth = 22,
 		mincloakdistance = 80,
 		movementclass = "BOT3",
-		nochasecategory = "VTOL",
+		nochasecategory = "VTOL GROUNDSCOUT",
 		objectname = "Units/ARMSNIPE.s3o",
 		power = 750, --compensation for XP rank with super low AoE weapons
 		script = "Units/ARMSNIPE.cob",
@@ -187,6 +187,7 @@ return {
 		},
 		weapons = {
 			[1] = {
+				badtargetcategory = "GROUNDSCOUT",
 				def = "OLD_ARMSNIPE_WEAPON",
 				onlytargetcategory = "SURFACE",
 			},

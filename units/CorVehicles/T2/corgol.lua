@@ -24,7 +24,7 @@ return {
 		speed = 40.5,
 		maxwaterdepth = 12,
 		movementclass = "HTANK4",
-		nochasecategory = "VTOL",
+		nochasecategory = "VTOL GROUNDSCOUT",
 		objectname = "Units/CORGOL.s3o",
 		script = "Units/CORGOL.cob",
 		seismicsignature = 0,
@@ -130,6 +130,8 @@ return {
 				gravityaffected = "true",
 				impulseboost = 0.123,
 				impulsefactor = 0.123,
+				leadlimit = 128,
+				proximityPriority  = -0.3,
 				name = "HeavyCannon",
 				noselfdamage = true,
 				range = 650,
@@ -150,8 +152,10 @@ return {
 		weapons = {
 			[1] = {
 				def = "COR_GOL",
+				badtargetcategory = "VTOL GROUNDSCOUT",
 				onlytargetcategory = "SURFACE",
 				fastautoretargeting = true,
+				weaponAimAdjustPriority = 125,
 			},
 		},
 	},
