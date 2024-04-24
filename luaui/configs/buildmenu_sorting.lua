@@ -10,6 +10,7 @@ local unitOrderTable = {
 	['legcv']          = 001135,
 	['armbeaver']      = 001140,
 	['cormuskrat']     = 001150,
+	['legotter']       = 001155,
 
 	['armca']          = 001160, --AIR
 	['corca']          = 001165,
@@ -341,6 +342,8 @@ local unitOrderTable = {
 
 	['armdronecarry']  = 009360, --DRONE CARRIERS
 	['cordronecarry']  = 009361,
+	['armdtrident']  = 009362, --DEPTH CHARGE DRONE CARRIERS
+	['corsentinel']  = 009363,
 
 	['armbats']        = 009370, --STRONK
 	['corbats']        = 009380,
@@ -572,6 +575,7 @@ local unitOrderTable = {
    ['legmg']          = 107000, --land/AA machinegun
    ['armpb']          = 107100,
    ['corvipe']        = 107200,
+   ['legbombard']     = 107250,
    ['armamb']         = 107300,
    ['cortoast']       = 107400,
    ['armanni']        = 107500,
@@ -612,6 +616,7 @@ local unitOrderTable = {
    --DEFENSES MISSILE LAUNCHERS
    ['armemp']         = 165000,
    ['cortron']        = 165500,
+   ['legperdition']   = 165600,
    ['armamd']         = 166000,
    ['corfmd']         = 166500,
    ['armsilo']        = 180000,

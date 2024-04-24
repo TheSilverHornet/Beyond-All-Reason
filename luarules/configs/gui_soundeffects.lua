@@ -2412,6 +2412,17 @@ GUIUnitSoundEffects = {
 		--BaseSoundMovementType = "",
 		BaseSoundWeaponType = "arm-bld-lolcannon",
 	},
+	
+	legperdition = {
+		BaseSoundSelectType = "arm-bld-defense-action-t2",
+		--BaseSoundMovementType = "",
+		BaseSoundWeaponType = "rocketalt-large",
+	},	
+	legbombard = {
+		BaseSoundSelectType = "arm-bld-defense-action-t2",
+		--BaseSoundMovementType = "",
+		BaseSoundWeaponType = "plasma-large-alt",
+	},	
 
 	legbastion = {
 		BaseSoundSelectType = "arm-bld-defense-action-t3",
@@ -2570,6 +2581,11 @@ GUIUnitSoundEffects = {
 		BaseSoundMovementType = "cor-tnk-small-ok",
 		BaseSoundWeaponType = "conalt-small",
 	},
+	legotter = {
+		BaseSoundSelectType = "cor-tnk-small-amph-sel",
+		BaseSoundMovementType = "cor-tnk-small-amph-ok",
+		BaseSoundWeaponType = "conalt-small",
+	},	
 	leghelios = {
 		BaseSoundSelectType = "cor-veh-small-sel",
 		BaseSoundMovementType = "cor-veh-small-ok",
