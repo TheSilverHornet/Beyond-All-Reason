@@ -38,7 +38,6 @@ local spGetGameFrame = Spring.GetGameFrame
 local gameframe = spGetGameFrame()
 
 local gameMaxUnits = math.min(Spring.GetModOptions().maxunits, math.floor(32000 / #Spring.GetTeamList()))
-local totalUnits = 0
 
 local lockPlayerID
 local gaiaTeamID = Spring.GetGaiaTeamID()
@@ -70,8 +69,8 @@ if not voiceSetFound then
 	voiceSet = defaultVoiceSet
 end
 
-local soundFolder = "Sounds/voice/"..voiceSet.."/"
-local defaultSoundFolder = "Sounds/voice/"..defaultVoiceSet.."/"
+local soundFolder = "sounds/voice/"..voiceSet.."/"
+local defaultSoundFolder = "sounds/voice/"..defaultVoiceSet.."/"
 
 -- load and parse sound files/notifications
 local soundsTable = VFS.Include(soundFolder .. 'config.lua')
@@ -118,38 +117,36 @@ end
 
 
 local unitsOfInterestNames = {
-	['armemp'] = 'EMPmissilesiloDetected',
-	['armemp'] = 'EMPmissilesiloDetected',
-	['cortron'] = 'TacticalNukeSiloDetected',
-	['armsilo'] = 'NuclearSiloDetected',
-	['corsilo'] = 'NuclearSiloDetected',
-	['corint'] = 'LrpcDetected',
-	['armbrtha'] = 'LrpcDetected',
-	['corbuzz'] = 'LrpcDetected',
-	['armvulc'] = 'LrpcDetected',
-	['armliche'] = 'NuclearBomberDetected',
-	['corjugg'] = 'JuggernautDetected',
-	['corkorg'] = 'KorgothDetected',
-	['armbanth'] = 'BanthaDetected',
-	['armepoch'] = 'FlagshipDetected',
-	['corblackhy'] = 'FlagshipDetected',
-	['cormando'] = 'CommandoDetected',
-	['armthovr'] = 'TransportDetected',
-	['corthovr'] = 'TransportDetected',
-	['corintr'] = 'TransportDetected',
-	['armatlas'] = 'AirTransportDetected',
-	['corvalk'] = 'AirTransportDetected',
-	['armdfly'] = 'AirTransportDetected',
-	['corseah'] = 'AirTransportDetected',
-	['armtship'] = 'SeaTransportDetected',
-	['cortship'] = 'SeaTransportDetected',
+	armemp = 'EMPmissilesiloDetected',
+	armemp = 'EMPmissilesiloDetected',
+	cortron = 'TacticalNukeSiloDetected',
+	armsilo = 'NuclearSiloDetected',
+	corsilo = 'NuclearSiloDetected',
+	corint = 'LrpcDetected',
+	armbrtha = 'LrpcDetected',
+	corbuzz = 'LrpcDetected',
+	armvulc = 'LrpcDetected',
+	armliche = 'NuclearBomberDetected',
+	corjugg = 'JuggernautDetected',
+	corkorg = 'KorgothDetected',
+	armbanth = 'BanthaDetected',
+	armepoch = 'FlagshipDetected',
+	corblackhy = 'FlagshipDetected',
+	cormando = 'CommandoDetected',
+	armthovr = 'TransportDetected',
+	corthovr = 'TransportDetected',
+	corintr = 'TransportDetected',
+	armatlas = 'AirTransportDetected',
+	corvalk = 'AirTransportDetected',
+	armdfly = 'AirTransportDetected',
+	corseah = 'AirTransportDetected',
+	armtship = 'SeaTransportDetected',
+	cortship = 'SeaTransportDetected',
 }
 -- convert unitname -> unitDefID
 local unitsOfInterest = {}
 for unitName, sound in pairs(unitsOfInterestNames) do
-	if not UnitDefNames[unitName] then
-		Spring.Echo('WARNING... snd_notifications: couldnt apply sound/warning for unit name: '..unitName)
-	else
+	if UnitDefNames[unitName] then
 		unitsOfInterest[UnitDefNames[unitName].id] = sound
 	end
 end
@@ -729,7 +726,7 @@ local function playNextSound()
 				Spring.PlaySoundFile(Sound[event].file[m], globalVolume, 'ui')
 			end
 			if displayMessages and WG['messages'] and Sound[event].messageKey then
-				WG['messages'].addMessage(Spring.I18N(Sound[event].messageKey)..'  ('..gameMaxUnits..')')
+				WG['messages'].addMessage(Spring.I18N(Sound[event].messageKey))
 			end
 		end
 		LastPlay[event] = spGetGameFrame()
@@ -823,7 +820,7 @@ function widget:SetConfigData(data)
 	if data.customNotifications ~= nil and Spring.GetGameFrame() > 0 then
 		customNotifications = data.customNotifications
 	end
-	if data.soundList ~= nil then
+	if data.soundList ~= nil and type(data.soundList) == 'table' then
 		for sound, enabled in pairs(data.soundList) do
 			if Sound[sound] then
 				soundList[sound] = enabled

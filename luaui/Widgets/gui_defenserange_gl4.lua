@@ -265,9 +265,7 @@ local function initUnitList()
 	-- convert unitname -> unitDefID
 	unitDefRings = {}
 	for unitName, ranges in pairs(unitDefRingsNames) do
-		if not UnitDefNames[unitName] then
-			Spring.Echo('WARNING... gfx_defenserange_gl4: couldnt apply ranges for unit name: '..unitName)
-		else
+		if UnitDefNames[unitName] then
 			unitDefRings[UnitDefNames[unitName].id] = ranges
 		end
 	end
@@ -294,7 +292,9 @@ local function initUnitList()
 		scavlist[k] = true
 	end
 	for k,v in pairs(scavlist) do
-		mobileAntiUnitDefs[UnitDefNames[unitName[k] .. '_scav'].id] = mobileAntiUnitDefs[k]
+		if UnitDefNames[unitName[k] .. '_scav'] then
+			mobileAntiUnitDefs[UnitDefNames[unitName[k] .. '_scav'].id] = mobileAntiUnitDefs[k]
+		end
 	end
 
 	-- Initialize featureDefIDtoUnitDefID
@@ -461,7 +461,7 @@ out DataVS {
 #line 11000
 
 float heightAtWorldPos(vec2 w){
-	vec2 uvhm =  heighmapUVatWorldPos(w);
+	vec2 uvhm =  heightmapUVatWorldPos(w);
 	return textureLod(heightmapTex, uvhm, 0.0).x;
 }
 

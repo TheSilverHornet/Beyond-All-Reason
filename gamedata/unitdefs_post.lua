@@ -3,6 +3,21 @@ VFS.Include("gamedata/alldefs_post.lua")
 VFS.Include("gamedata/post_save_to_customparams.lua")
 local system = VFS.Include("gamedata/system.lua")
 
+local scavengersEnabled = true
+if Spring.GetTeamList then
+	scavengersEnabled = false
+	local teamList = Spring.GetTeamList()
+	for _, teamID in ipairs(teamList) do
+		local luaAI = Spring.GetTeamLuaAI(teamID)
+		if luaAI and luaAI:find("Scavengers") then
+			scavengersEnabled = true
+		end
+	end
+end
+if Spring.GetModOptions().ruins == "enabled" then
+	scavengersEnabled = true
+end
+
 local regularUnitDefs = {}
 local scavengerUnitDefs = {}
 
@@ -291,9 +306,12 @@ if SaveDefsToCustomParams then
 	bakeUnitDefs()
 end
 
+
 preProcessTweakOptions()
 preProcessUnitDefs()
-createScavengerUnitDefs()
+if scavengersEnabled then
+	createScavengerUnitDefs()
+end
 postProcessAllUnitDefs()
 postProcessRegularUnitDefs()
 postProcessScavengerUnitDefs()

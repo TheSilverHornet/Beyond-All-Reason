@@ -11,7 +11,7 @@ function widget:GetInfo()
 	}
 end
 
-local CMD_AREA_MEX = 10100
+VFS.Include("luarules/configs/customcmds.h.lua")
 
 local spGetActiveCommand = Spring.GetActiveCommand
 local spGetMapDrawMode = Spring.GetMapDrawMode
@@ -105,7 +105,9 @@ local function getCmdsForValidSpots(spots, shift)
 		if not spotHasQueue then
 			local pos = { spot.x, spot.y, spot.z }
 			local cmd = WG['resource_spot_builder'].PreviewExtractorCommand(pos, selectedMex, spot)
-			cmds[#cmds + 1] = cmd
+			if cmd then
+				cmds[#cmds + 1] = cmd
+			end
 		end
 	end
 	return cmds
