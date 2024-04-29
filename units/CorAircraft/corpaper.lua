@@ -20,7 +20,7 @@ return {
 		maxacc = 0.3,
 		maxaileron = 0.015,
 		maxbank = 0.7,
-		maxdamage = 116,
+		maxdamage = 80,
 		maxelevator = 0.0105,
 		maxpitch = 0.625,
 		maxrudder = 0.01,
@@ -115,7 +115,7 @@ return {
 				soundhitwet = "splshbig",
 				soundstart = "minigun3",
 				soundstartvolume = 3,
-				sprayangle = 250,
+				sprayangle = 350,
 				thickness = 0.6,
 				tolerance = 2400,
 				turret = true,
@@ -125,7 +125,7 @@ return {
 				damage = {
 					commanders = 1,
 					default = 2,
-					vtol = 12,
+					vtol = 13,
 				},
 			},
 		
@@ -174,7 +174,7 @@ return {
 				damage = {
 					commanders = 4,
 					default = 12,
-					vtol = 125,
+					vtol = 100,
 				},
 			},
 		},

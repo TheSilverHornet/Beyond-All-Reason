@@ -176,7 +176,7 @@ return {
 				damage = {
 					commanders = 8,
 					default = 24,
-					vtol = 40,
+					vtol = 60,
 				},
 			},
 		},
@@ -185,7 +185,7 @@ return {
 				badtargetcategory = "NOTAIR",
 				def = "scissor_missile",
 				maindir = "0 0 1",
-				maxangledif = 20,
+				maxangledif = 35,
 				onlytargetcategory = "VTOL",
 			},
 		},
