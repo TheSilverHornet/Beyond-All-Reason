@@ -38,7 +38,6 @@ return {
 		buildoptions = {
 			[1] = "corca",
 			[2] = "corfink",
-			[3] = "corveng",
 			[4] = "corshad",
 			[5] = "corpaper",
 			[6] = "corbw",
