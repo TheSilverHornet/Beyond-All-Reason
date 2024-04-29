@@ -94,7 +94,7 @@ return {
 				model = "cormissile2fast.s3o",
 				name = "Heavy a2a missiles",
 				noselfdamage = true,
-				range = 910,
+				range = 1010,
 				reloadtime = 7,
 				smoketrail = true,
 				smokePeriod = 7,
