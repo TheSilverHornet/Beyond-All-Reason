@@ -2061,6 +2061,11 @@ GUIUnitSoundEffects = {
 		BaseSoundMovementType = "cor-tnk-large-ok",
 		BaseSoundWeaponType = "plasma-medium",
 	},
+	corsiegebreaker = {
+		BaseSoundSelectType = "cor-tnk-large-sel",
+		BaseSoundMovementType = "cor-tnk-large-ok",
+		BaseSoundWeaponType = "laser-large",
+	},
 	corban = {
 		BaseSoundSelectType = "cor-tnk-large-sel",
 		BaseSoundMovementType = "cor-tnk-large-ok",
@@ -2412,6 +2417,17 @@ GUIUnitSoundEffects = {
 		--BaseSoundMovementType = "",
 		BaseSoundWeaponType = "arm-bld-lolcannon",
 	},
+	
+	legperdition = {
+		BaseSoundSelectType = "arm-bld-defense-action-t2",
+		--BaseSoundMovementType = "",
+		BaseSoundWeaponType = "rocketalt-large",
+	},	
+	legbombard = {
+		BaseSoundSelectType = "arm-bld-defense-action-t2",
+		--BaseSoundMovementType = "",
+		BaseSoundWeaponType = "plasma-large-alt",
+	},	
 
 	legbastion = {
 		BaseSoundSelectType = "arm-bld-defense-action-t3",
@@ -2469,7 +2485,11 @@ GUIUnitSoundEffects = {
 		BaseSoundActivate   = "arm-bld-solar-activate",
 		BaseSoundDeactivate = "arm-bld-solar-deactivate",
 	},
-
+	legadvsol = {
+		BaseSoundSelectType = "arm-bld-nrghum",
+		--BaseSoundMovementType = "",
+		BaseSoundWeaponType = "arm-bld-solar-alt-adv",
+	},
 
 	-- LEGION T1 BOTS
 	legck = {
@@ -2566,6 +2586,11 @@ GUIUnitSoundEffects = {
 		BaseSoundMovementType = "cor-tnk-small-ok",
 		BaseSoundWeaponType = "conalt-small",
 	},
+	legotter = {
+		BaseSoundSelectType = "cor-tnk-small-amph-sel",
+		BaseSoundMovementType = "cor-tnk-small-amph-ok",
+		BaseSoundWeaponType = "conalt-small",
+	},	
 	leghelios = {
 		BaseSoundSelectType = "cor-veh-small-sel",
 		BaseSoundMovementType = "cor-veh-small-ok",

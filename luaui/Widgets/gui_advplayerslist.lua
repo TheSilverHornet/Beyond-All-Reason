@@ -4,10 +4,10 @@ function widget:GetInfo()
         desc = "List of players and spectators",
         author = "Marmoth. (spiced up by Floris)",
         date = "2008",
-        version = 39,
+        version = 40,
         license = "GNU GPL, v2 or later",
         layer = -4,
-        enabled = true, --  loaded by default?
+        enabled = true,
     }
 end
 
@@ -48,6 +48,7 @@ end
 	v37   (Floris/Borg_King): add support for much larger player/spec counts  64 -> 256
 	v38   (Floris): significant performance improvement, + fast updating resources
 	v39   (Floris): auto compress when large amount (33+) of players are participating (same is separately applied for spectator list)
+	v40   (Floris): draw a faint pencil/eraser when player is drawing/erasing
 ]]
 --------------------------------------------------------------------------------
 -- Config
@@ -55,6 +56,7 @@ end
 
 local customScale = 1
 local pointDuration = 45
+local pencilDuration = 5
 local drawAlliesLabel = false
 local alwaysHideSpecs = true
 local lockcameraHideEnemies = true            -- specfullview
@@ -134,6 +136,8 @@ local pics = {
     cpuPic = imageDirectory .. "cpu.dds",
     barPic = imageDirectory .. "bar.png",
     pointPic = imageDirectory .. "point.dds",
+    pencilPic = imageDirectory .. "pencil.dds",
+    eraserPic = imageDirectory .. "eraser.dds",
     lowPic = imageDirectory .. "low.dds",
     arrowPic = imageDirectory .. "arrow.dds",
     takePic = imageDirectory .. "take.dds",
@@ -595,9 +599,9 @@ function SetModulesPositionX()
             updateWidgetScale()
         end
     end
-	if widgetWidth < minWidth then
-		widgetWidth = minWidth
-	end
+    if widgetWidth < minWidth then
+        widgetWidth = minWidth
+    end
 
     if widgetWidth ~= prevWidgetWidth then
         prevWidgetWidth = widgetWidth
@@ -974,10 +978,9 @@ end
 local function SetOriginalColourNames()
     -- Saves the original team colours associated to team teamID
     for playerID, _ in pairs(player) do
-        if player[playerID].name then
-            if not player[playerID].spec then
-                originalColourNames[playerID] = colourNames(player[playerID].team)
-            end
+        if player[playerID].name and not player[playerID].spec and playerID < specOffset then
+            local colorstring, r, g, b = colourNames(player[playerID].team, true)
+            originalColourNames[playerID] = { r, g, b }
         end
     end
 end
@@ -1737,6 +1740,9 @@ function CreateBackground()
     if prevApiAbsPosition[1] ~= absTop or prevApiAbsPosition[2] ~= absLeft or prevApiAbsPosition[3] ~= absBottom or prevApiAbsPosition[4] ~= absRight then
         forceMainListRefresh = true
     end
+    if absRight > vsx+margin then   -- lazy bugfix needed when playerScale < 1 is in effect
+        absRight = vsx+margin
+    end
     apiAbsPosition = { absTop, absLeft, absBottom, absRight, widgetScale, right, false }
 
     local paddingBottom = bgpadding
@@ -1827,6 +1833,16 @@ function CheckTime()
                         player[playerID].pointY = nil
                         player[playerID].pointZ = nil
                         player[playerID].pointTime = nil
+                    end
+                end
+                if player[playerID].pencilTime ~= nil then
+                    if player[playerID].pencilTime <= now then
+                        player[playerID].pencilTime = nil
+                    end
+                end
+                if player[playerID].eraserTime ~= nil then
+                    if player[playerID].eraserTime <= now then
+                        player[playerID].eraserTime = nil
                     end
                 end
             end
@@ -1992,7 +2008,7 @@ function DrawLabelTip(text, vOffset, xOffset)
 end
 
 function DrawSeparator(vOffset)
-    vOffset = vOffset - (2.15/playerScale)
+    vOffset = vOffset - (3*playerScale)
     RectRound(
 		widgetPosX + 2,
 		widgetPosY + widgetHeight - vOffset - (1.5 / widgetScale),
@@ -2058,7 +2074,7 @@ function DrawPlayer(playerID, leader, vOffset, mouseX, mouseY, onlyMainList, onl
         end
     end
 
-    if mouseY >= tipPosY and mouseY <= tipPosY + (16 * widgetScale) then
+    if mouseY >= tipPosY and mouseY <= tipPosY + (16 * widgetScale * playerScale) then
         tipY = true
     end
 
@@ -2191,6 +2207,16 @@ function DrawPlayer(playerID, leader, vOffset, mouseX, mouseY, onlyMainList, onl
                         if tipY then
                             PointTip(mouseX)
                         end
+                    end
+                end
+                if player[playerID].pencilTime ~= nil then
+                    if player[playerID].allyteam == myAllyTeamID or mySpecStatus then
+                        DrawPencil(posY, player[playerID].pencilTime - now)
+                    end
+                end
+                if player[playerID].eraserTime ~= nil then
+                    if player[playerID].allyteam == myAllyTeamID or mySpecStatus then
+                        DrawEraser(posY, player[playerID].eraserTime - now)
                     end
                 end
             end
@@ -2482,7 +2508,7 @@ function DrawCamera(posY, active)
     DrawRect(m_indent.posX + widgetPosX - (1.5*playerScale), posY + (2*playerScale), m_indent.posX + widgetPosX + (9*playerScale), posY + (12.4*playerScale))
 end
 
-function colourNames(teamID)
+function colourNames(teamID, returnRgbToo)
     local nameColourR, nameColourG, nameColourB, nameColourA = Spring_GetTeamColor(teamID)
 	if (not mySpecStatus) and anonymousMode ~= "disabled" and teamID ~= myTeamID then
 		nameColourR, nameColourG, nameColourB = anonymousTeamColor[1], anonymousTeamColor[2], anonymousTeamColor[3]
@@ -2499,7 +2525,11 @@ function colourNames(teamID)
     if B255 % 10 == 0 then
         B255 = B255 + 1
     end
-    return "\255" .. string.char(R255) .. string.char(G255) .. string.char(B255) --works thanks to zwzsg
+    if returnRgbToo then
+        return "\255" .. string.char(R255) .. string.char(G255) .. string.char(B255), R255, G255, B255 --works thanks to zwzsg
+    else
+        return "\255" .. string.char(R255) .. string.char(G255) .. string.char(B255) --works thanks to zwzsg
+    end
 end
 
 function DrawState(playerID, posX, posY)
@@ -2636,7 +2666,7 @@ function DrawSmallName(name, team, posY, dark, playerID, alpha)
     end
 
     if originalColourNames[playerID] then
-        name = originalColourNames[playerID] .. name
+        name = "\255" .. string.char(originalColourNames[playerID][1]) .. string.char(originalColourNames[playerID][2]) .. string.char(originalColourNames[playerID][3]) .. name
     end
 
     font2:Begin()
@@ -2744,6 +2774,22 @@ function DrawPoint(posY, pointtime)
         gl_Texture(pics["pointPic"])
         DrawRect(leftPosX + (33*playerScale), posY - (1*playerScale), leftPosX + (17*playerScale), posY + (15*playerScale))
     end
+    gl_Color(1, 1, 1, 1)
+end
+
+function DrawPencil(posY, time)
+    leftPosX = widgetPosX + widgetWidth
+    gl_Color(1, 1, 1, (time / pencilDuration ) * 0.12)
+    gl_Texture(pics["pencilPic"])
+    DrawRect(m_indent.posX + widgetPosX - 3.5, posY + (3*playerScale), m_indent.posX + widgetPosX - 1.5 + (8*playerScale), posY + (14*playerScale))
+    gl_Color(1, 1, 1, 1)
+end
+
+function DrawEraser(posY, time)
+    leftPosX = widgetPosX + widgetWidth
+    gl_Color(1, 1, 1, (time / pencilDuration ) * 0.12)
+    gl_Texture(pics["eraserPic"])
+    DrawRect(m_indent.posX + widgetPosX -0.5, posY + (3*playerScale), m_indent.posX + widgetPosX + 1.5 + (8*playerScale), posY + (14*playerScale))
     gl_Color(1, 1, 1, 1)
 end
 
@@ -2887,8 +2933,9 @@ function PingCpuTip(mouseX, pingLvl, cpuLvl, fps, gpumem, system, name, teamID, 
         if gpumem ~= nil then
             tipText = tipText .. "    " .. Spring.I18N('ui.playersList.gpuMemory', { gpuUsage = gpumem })
         end
+        tipText = (spec and "\255\240\240\240" or colourNames(teamID)) .. name .. "\n" .. tipText
         if system ~= nil then
-            tipText = (spec and "\255\240\240\240" or colourNames(teamID)) .. name .. "\n\255\215\255\215" .. tipText .. "\n\255\240\240\240" .. system
+            tipText = tipText .. "\n\255\240\240\240" .. system
         end
         tipTextTime = os.clock()
     end
@@ -3284,6 +3331,7 @@ function widget:GetConfigData()
             m_active_Table[module.name] = module.active
         end
 
+
         local settings = {
             --view
             customScale = customScale,
@@ -3607,7 +3655,7 @@ function widget:Update(delta)
         local curMapDrawMode = Spring.GetMapDrawMode()
         Spring_SendCommands("specteam " .. player[clickedPlayerID].team)
         if lockPlayerID then
-            LockCamera(player[clickedPlayerID].ai and nil or i)
+            LockCamera(player[clickedPlayerID].ai and nil or clickedPlayerID)
         else
             if not fullView then
                 desiredLosmode = 'los'
@@ -3767,6 +3815,10 @@ function widget:MapDrawCmd(playerID, cmdType, px, py, pz)
             player[playerID].pointY = py
             player[playerID].pointZ = pz
             player[playerID].pointTime = now + pointDuration
+        elseif cmdType == 'line' then
+            player[playerID].pencilTime = now + pencilDuration
+        elseif cmdType == 'erase' then
+            player[playerID].eraserTime = now + pencilDuration
         end
     end
 end

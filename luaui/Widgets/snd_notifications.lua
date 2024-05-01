@@ -38,7 +38,6 @@ local spGetGameFrame = Spring.GetGameFrame
 local gameframe = spGetGameFrame()
 
 local gameMaxUnits = math.min(Spring.GetModOptions().maxunits, math.floor(32000 / #Spring.GetTeamList()))
-local totalUnits = 0
 
 local lockPlayerID
 local gaiaTeamID = Spring.GetGaiaTeamID()
@@ -70,8 +69,8 @@ if not voiceSetFound then
 	voiceSet = defaultVoiceSet
 end
 
-local soundFolder = "Sounds/voice/"..voiceSet.."/"
-local defaultSoundFolder = "Sounds/voice/"..defaultVoiceSet.."/"
+local soundFolder = "sounds/voice/"..voiceSet.."/"
+local defaultSoundFolder = "sounds/voice/"..defaultVoiceSet.."/"
 
 -- load and parse sound files/notifications
 local soundsTable = VFS.Include(soundFolder .. 'config.lua')
@@ -821,7 +820,7 @@ function widget:SetConfigData(data)
 	if data.customNotifications ~= nil and Spring.GetGameFrame() > 0 then
 		customNotifications = data.customNotifications
 	end
-	if data.soundList ~= nil then
+	if data.soundList ~= nil and type(data.soundList) == 'table' then
 		for sound, enabled in pairs(data.soundList) do
 			if Sound[sound] then
 				soundList[sound] = enabled
