@@ -25,7 +25,7 @@ return {
 		speed = 39.0,
 		maxwaterdepth = 112,
 		movementclass = "BOT3",
-		nochasecategory = "MOBILE",
+		nochasecategory = "MOBILE ALL",
 		objectname = "Units/CORSPEC.s3o",
 		onoffable = true,
 		radardistance = 0,
@@ -40,6 +40,7 @@ return {
 		turnrate = 1086.75,
 		upright = true,
 		customparams = {
+			maxrange=600,
 			unitgroup = 'util',
 			model_author = "FireStorm",
 			normaltex = "unittextures/cor_normal.dds",
