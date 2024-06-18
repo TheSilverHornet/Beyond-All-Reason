@@ -3026,7 +3026,7 @@ function init()
 			  Spring.SetConfigInt("DoubleClickTime", value)
 		  end,
 		},
-	--[[
+	
 		{ id = "dragthreshold", group = "control", category = types.advanced, restart = false, name = Spring.I18N('ui.settings.option.dragthreshold'), type = "slider", min = 4, max = 50, step = 1, value = Spring.GetConfigInt("MouseDragSelectionThreshold", 4), description = Spring.I18N('ui.settings.option.dragthreshold_descr'),
 		  onload = function(i)
 		  end,
@@ -3037,7 +3037,7 @@ function init()
 			  Spring.SetConfigInt("MouseDragFrontCommandThreshold", value + 26)
 		  end,
 		},
-	]]--
+	
 
 
 		{ id = "label_ui_camera", group = "control", name = Spring.I18N('ui.settings.option.label_camera'), category = types.basic },
@@ -6132,7 +6132,6 @@ function init()
 		local filteredOptions = {}
 		for i, option in pairs(options) do
 			if option.name and option.name ~= '' and option.type and option.type ~= 'label' then
-				--local name = string.gsub(option.name, "(\\[0-9]+)+", "")
 				local name = string.gsub(option.name, widgetOptionColor, "")
 				name = string.gsub(name, "  ", " ")
 				if string.find(string.lower(name), string.lower(inputText), nil, true) then
