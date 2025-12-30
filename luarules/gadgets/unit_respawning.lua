@@ -1,5 +1,7 @@
 
 
+local gadget = gadget ---@type Gadget
+
 function gadget:GetInfo()
 	return {
 		name = "Unit Respawning",
@@ -14,66 +16,37 @@ end
 
 if gadgetHandler:IsSyncedCode() then
 
-	local spCreateFeature         = Spring.CreateFeature
 	local spCreateUnit            = Spring.CreateUnit
 	local spDestroyUnit           = Spring.DestroyUnit
-	local spGetGameFrame          = Spring.GetGameFrame
-	local spGetProjectileDefID    = Spring.GetProjectileDefID
-	local spGetProjectileTeamID   = Spring.GetProjectileTeamID
-	local spGetUnitHealth		  = Spring.GetUnitHealth
-	local spGetUnitShieldState    = Spring.GetUnitShieldState
 	local spGiveOrderToUnit       = Spring.GiveOrderToUnit
-	local spSetFeatureDirection   = Spring.SetFeatureDirection
 	local spSetUnitRulesParam     = Spring.SetUnitRulesParam
 	local spGetUnitPosition       = Spring.GetUnitPosition
-	local SetUnitNoSelect         = Spring.SetUnitNoSelect
 	local spGetUnitRulesParam = Spring.GetUnitRulesParam
-	local spUseTeamResource = Spring.UseTeamResource --(teamID, "metal"|"energy", amount) return nil | bool hadEnough
-	local spGetTeamResources = Spring.GetTeamResources --(teamID, "metal"|"energy") return nil | currentLevel
-	local GetCommandQueue     = Spring.GetCommandQueue
-	local spSetUnitArmored = Spring.SetUnitArmored
-	local spGetUnitStates = Spring.GetUnitStates
-	local spGetUnitBasePosition = Spring.GetUnitBasePosition
-	local spGetUnitDefID        = Spring.GetUnitDefID
-	local spSetUnitVelocity     = Spring.SetUnitVelocity
-	local spGetUnitHeading      = Spring.GetUnitHeading
-	local spGetUnitVelocity     = Spring.GetUnitVelocity
 	local spGetUnitHealth 		= Spring.GetUnitHealth
-
-	local spGetUnitExperience	= Spring.GetUnitExperience
 	local spGetUnitTeam 		= Spring.GetUnitTeam
-	local spGetUnitDirection 	= Spring.GetUnitDirection
-	local spGetUnitStockpile 	= Spring.GetUnitStockpile
-	local spGetUnitCommands = Spring.GetUnitCommands
-	local spEcho = Spring.Echo
 	local spSetUnitHealth = Spring.SetUnitHealth
-
-	local spSetUnitExperience = Spring.SetUnitExperience
-	local spSetUnitStockpile = Spring.SetUnitStockpile
-	local spSetUnitDirection = Spring.SetUnitDirection
 	local spGetGameSeconds = Spring.GetGameSeconds
 	local spGetUnitNearestEnemy = Spring.GetUnitNearestEnemy
+	local spGetUnitDefID = Spring.GetUnitDefID
 
-	local mcSetVelocity         = Spring.MoveCtrl.SetVelocity
-	local mcSetPosition         = Spring.MoveCtrl.SetPosition
 
-	local mapsizeX 				  = Game.mapSizeX
-	local mapsizeZ 				  = Game.mapSizeZ
 
 	local diag = math.diag
 
 
-	local GAME_SPEED = Game.gameSpeed
-	local TAU = 2 * math.pi
 	local PRIVATE = { private = true }
-	local CMD_WAIT = CMD.WAIT
-	local EMPTY_TABLE = {}
 
 	local respawnMetaList = {}
-	local effigyMetaList = {}
 	local defCustomParams = {}
+	local effigyToCommander = {} -- Maps effigy unit ID to commander unit ID for fast lookup
 
-	local TIMER_CHECK_FREQUENCY = 30 -- gameframes
+	local function destroyEffigy(effigyID, selfd, reclaimed)
+		if effigyID then
+			effigyToCommander[effigyID] = nil
+			spDestroyUnit(effigyID, selfd, reclaimed)
+		end
+	end
+
 
 	--messages[1] = textColor .. Spring.I18N('ui.raptors.wave1', {waveNumber = raptorEventArgs.waveCount})
 
@@ -82,18 +55,18 @@ if gadgetHandler:IsSyncedCode() then
 	--customparams = {
 		--	-- Required:
 		-- respawn_condition = "health",   sets the respawn condition. Health is the only option implemented
-		
-		
+
+
 		--	-- Optional:
 		-- effigy = "unit_name",						--Set this to spawn the effigy unit when the main unit is created.
-		-- minimum_respawn_stun = 5,					--respawn stun duration, roughly in seconds. 
-		-- distance_stun_multiplier = 1,				--respawn stun duration based on distance from respawn location when dying. (distance * distance_stun_multiplier) 
-		-- respawn_pad = true,							--set this to true if you want the effigy to stay where it is when respawning. Use this if the effigy unit is a respawn pad or similar. 
+		-- minimum_respawn_stun = 5,					--respawn stun duration, roughly in seconds.
+		-- distance_stun_multiplier = 1,				--respawn stun duration based on distance from respawn location when dying. (distance * distance_stun_multiplier)
+		-- respawn_pad = true,							--set this to true if you want the effigy to stay where it is when respawning. Use this if the effigy unit is a respawn pad or similar.
 		-- iseffigy = true,								--set this in the unitdef of the effigies that are buildable by the player.
 
 		--	-- Has a default value, as indicated, if not chosen:
 		-- respawn_health_threshold = 0,				--The health value when the unit will initiate the respawn sequence.
-		-- destructive_respawn = true,					--If this is set to true, the effigy unit will be destroyed when the unit respawns. 
+		-- destructive_respawn = true,					--If this is set to true, the effigy unit will be destroyed when the unit respawns.
 
 
 		-- },
@@ -106,19 +79,22 @@ if gadgetHandler:IsSyncedCode() then
 
     function ReturnToBase(unitID, friendlyFire)
 		local x,y,z = spGetUnitPosition(unitID) -- usefull if you want to spawn explosions or other effects where you were.
-		local team = spGetUnitTeam(unitID)
 
 
 		if respawnMetaList[unitID].effigyID then
 			local health, maxHealth = spGetUnitHealth(unitID)
-			local ex,ey,ez = spGetUnitPosition(respawnMetaList[unitID].effigyID)
+			local effigyID = respawnMetaList[unitID].effigyID
+			local ex,ey,ez = spGetUnitPosition(effigyID)
 			Spring.SetUnitPosition(unitID, ex, ez, true)
 			Spring.SpawnCEG("commander-spawn", ex, ey, ez, 0, 0, 0)
 			Spring.PlaySoundFile("commanderspawn-mono", 1.0, ex, ey, ez, 0, 0, 0, "sfx")
 			GG.ComSpawnDefoliate(ex, ey, ez)
 
+			-- Mark effigy as used for respawning to prevent "lost" notifications
+			respawnMetaList[unitID].effigyID = nil
+
 			if respawnMetaList[unitID].respawn_pad == "false" then
-				Spring.SetUnitPosition(respawnMetaList[unitID].effigyID, x, z, true)
+				Spring.SetUnitPosition(effigyID, x, z, true)
 				Spring.SpawnCEG("commander-spawn", x, y, z, 0, 0, 0)
 				Spring.PlaySoundFile("commanderspawn-mono", 1.0, x, y, z, 0, 0, 0, "sfx")
 				GG.ComSpawnDefoliate(x, y, z)
@@ -126,15 +102,40 @@ if gadgetHandler:IsSyncedCode() then
 
 			if respawnMetaList[unitID].destructive_respawn then
 			    if friendlyFire then
-			        spDestroyUnit(respawnMetaList[unitID].effigyID, false, true)
+			        destroyEffigy(effigyID, false, true)
 			    else
-				    spDestroyUnit(respawnMetaList[unitID].effigyID, false, false)
+				    destroyEffigy(effigyID, false, false)
 				end
-				respawnMetaList[unitID].effigyID = nil
+				spSetUnitRulesParam(unitID, "unit_effigy", nil, PRIVATE)
 			end
 			local stunDuration = maxHealth + ((maxHealth/30)*respawnMetaList[unitID].minimum_respawn_stun) + (((maxHealth/30)*diag((x-ex), (z-ez))*respawnMetaList[unitID].distance_stun_multiplier)/250)--250 is an arbitrary number that seems to produce desired results.
-			spSetUnitHealth(unitID, {health = 1, capture = 0, paralyze = stunDuration, build = 0})
+			spSetUnitHealth(unitID, {health = 1, capture = 0, paralyze = stunDuration,})
 			spGiveOrderToUnit(unitID, CMD.STOP, {}, 0)
+		end
+
+		local unitDefID = spGetUnitDefID(unitID)
+		local udcp = defCustomParams[unitDefID]
+		if udcp and udcp.iscommander then
+			local unitTeam = respawnMetaList[unitID].unitTeam
+			local allPlayers = Spring.GetPlayerList()
+			local notificationEvent
+			for _, playerID in ipairs(allPlayers) do
+				local playerName, active, isSpectator, teamID, allyTeamID = Spring.GetPlayerInfo(playerID, true)
+				if teamID and unitTeam and not isSpectator then
+				if teamID == unitTeam then
+					notificationEvent = "RespawningCommanders/CommanderTransposed"
+				elseif teamID and Spring.AreTeamsAllied(teamID, unitTeam) then
+					notificationEvent = "RespawningCommanders/AlliedCommanderTransposed"
+				else
+					notificationEvent = "RespawningCommanders/EnemyCommanderTransposed"
+					end
+				elseif isSpectator then
+					notificationEvent = "RespawningCommanders/CommanderTransposed"
+				end
+				if notificationEvent then
+					GG.notifications.queueNotification(notificationEvent, "playerID", tostring(playerID))
+				end
+			end
 		end
     end
 
@@ -156,8 +157,7 @@ if gadgetHandler:IsSyncedCode() then
 				distance_stun_multiplier = tonumber(udcp.distance_stun_multiplier) or 0,
 				destructive_respawn = udcp.destructive_respawn or true,
 				respawn_pad = udcp.respawn_pad or "false",
-				
-				
+				unitTeam = unitTeam,
 				respawnTimer = spGetGameSeconds(),
 				effigyID = nil,
 			}
@@ -168,19 +168,23 @@ if gadgetHandler:IsSyncedCode() then
 					local x, y, z = spGetUnitPosition(unitID)
 					local blockType, blockID = Spring.GetGroundBlocked(x-i, z-i)
 					local groundH = Spring.GetGroundHeight(x-i, z-i)
-			
+
 					if respawnMetaList[unitID].effigy_offset == 0 then
 						local newUnitID = spCreateUnit(respawnMetaList[unitID].effigy, x, groundH, z, 0, unitTeam)
+						spSetUnitRulesParam(unitID, "unit_effigy", newUnitID, PRIVATE)
 						if newUnitID then
 							respawnMetaList[unitID].effigyID = newUnitID
+							effigyToCommander[newUnitID] = unitID
 							return
 						end
 					elseif not blockType then
 						local newUnitID = spCreateUnit(respawnMetaList[unitID].effigy, x-i, groundH, z-i, 0, unitTeam)
+						spSetUnitRulesParam(unitID, "unit_effigy", newUnitID, PRIVATE)
 						if newUnitID then
 							respawnMetaList[unitID].effigyID = newUnitID
+							effigyToCommander[newUnitID] = unitID
 							return
-						else 
+						else
 							blockedIncrement = blockedIncrement+50
 						end
 					end
@@ -192,53 +196,73 @@ if gadgetHandler:IsSyncedCode() then
 			if respawnMetaList[builderID] then
 				local oldeffigyID = respawnMetaList[builderID].effigyID
 				respawnMetaList[builderID].effigyID = unitID
-		
+				effigyToCommander[unitID] = builderID
+
 				if oldeffigyID then
 					local oldEffigyBuildProgress = select(5, spGetUnitHealth(oldeffigyID))
 					if oldEffigyBuildProgress == 1 then
 						Spring.SetUnitCosts(unitID, {buildTime = 1, metalCost = 1, energyCost = 1})
 					end
-					spDestroyUnit(oldeffigyID, false, true)
+					destroyEffigy(oldeffigyID, false, true)
 				end
+				spSetUnitRulesParam(builderID, "unit_effigy", unitID, PRIVATE)
 			else
 				for vipID, _ in pairs(respawnMetaList) do
 					local team = spGetUnitTeam(vipID)
 					if team == unitTeam then
-				
+
 						local oldeffigyID = respawnMetaList[vipID].effigyID
-						
+
 						respawnMetaList[vipID].effigyID = unitID
-		
+						effigyToCommander[unitID] = vipID
+
 						if oldeffigyID then
 							local oldEffigyBuildProgress = select(5, spGetUnitHealth(oldeffigyID))
 							if oldEffigyBuildProgress == 1 then
 								Spring.SetUnitCosts(unitID, {buildTime = 1, metalCost = 1, energyCost = 1})
 							end
-							spDestroyUnit(oldeffigyID, false, true)
+							destroyEffigy(oldeffigyID, false, true)
 						end
+						spSetUnitRulesParam(builderID, "unit_effigy", unitID, PRIVATE)
 						return
 					end
 				end
 			end
-			
 		end
 	end
 
-	
 
-	function gadget:UnitDestroyed(unitID)
+	function gadget:UnitDestroyed(unitID, unitDefID, unitTeam, attackerID, attackerDefID, attackerTeam, weaponDefID)
+		local effigyOwnerID = effigyToCommander[unitID]
+
+		if effigyOwnerID then
+			local udcp = defCustomParams[Spring.GetUnitDefID(effigyOwnerID)]
+			if udcp and udcp.iscommander and respawnMetaList[effigyOwnerID].effigyID then
+				-- Only send notification if the effigy wasn't already used for respawning
+				local commanderTeam = respawnMetaList[effigyOwnerID].unitTeam
+
+				local allPlayers = Spring.GetPlayerList()
+				for _, playerID in ipairs(allPlayers) do
+					local playerName, active, isSpectator, teamID, allyTeamID = Spring.GetPlayerInfo(playerID, true)
+					if teamID == commanderTeam then
+						GG.notifications.queueNotification("RespawningCommanders/CommanderEffigyLost", "playerID", tostring(playerID))
+					end
+				end
+			end
+		end
+
 		if respawnMetaList[unitID] then
 			if respawnMetaList[unitID].respawn_pad == "false" then
-				local newID = Spring.GetUnitRulesParam(unitID, "unit_evolved")
+				local newID = spGetUnitRulesParam(unitID, "unit_evolved")
                 if newID then
-					if respawnMetaList[newID].effigyID then
+					if respawnMetaList[newID] and respawnMetaList[newID].effigyID then
 						if respawnMetaList[unitID].effigyID then
 							local effigyBuildProgress = select(5, spGetUnitHealth(respawnMetaList[unitID].effigyID))
 							if effigyBuildProgress ~= 1 then
-								spDestroyUnit(respawnMetaList[newID].effigyID, false, true)
+								destroyEffigy(respawnMetaList[newID].effigyID, false, true)
 							end
 						else
-							spDestroyUnit(respawnMetaList[newID].effigyID, false, true)
+							destroyEffigy(respawnMetaList[newID].effigyID, false, true)
 						end
 					end
 					if respawnMetaList[unitID].effigyID then
@@ -247,23 +271,23 @@ if gadgetHandler:IsSyncedCode() then
 							if ex then
 								Spring.SetUnitPosition(respawnMetaList[newID].effigyID, ex, ez, true)
 							else
-								spDestroyUnit(respawnMetaList[newID].effigyID, false, true)
+								destroyEffigy(respawnMetaList[newID].effigyID, false, true)
 							end
-							spDestroyUnit(respawnMetaList[unitID].effigyID, false, true)
+							destroyEffigy(respawnMetaList[unitID].effigyID, false, true)
 						elseif respawnMetaList[newID] then
 							respawnMetaList[newID].effigyID = respawnMetaList[unitID].effigyID
 						else
-							spDestroyUnit(respawnMetaList[unitID].effigyID, false, false)
+							destroyEffigy(respawnMetaList[unitID].effigyID, false, false)
 						end
 					end
 				elseif respawnMetaList[unitID].effigyID then
-					spDestroyUnit(respawnMetaList[unitID].effigyID, false, true)
+					destroyEffigy(respawnMetaList[unitID].effigyID, false, true)
 				end
 			end
 			respawnMetaList[unitID] = nil
 		end
 	end
-	
+
 	function gadget:UnitPreDamaged(unitID, unitDefID, unitTeam, damage, paralyzer, weaponDefID, projectileID, attackerID, attackerDefID, attackerTeam)
 		if respawnMetaList[unitID] then
 			if respawnMetaList[unitID].respawn_condition == "health" then
@@ -290,14 +314,12 @@ if gadgetHandler:IsSyncedCode() then
 			end
 		end
 	end
-	
+
 
 
 else
 
 
-	local spSelectUnitArray = Spring.SelectUnitArray
-	local spGetSelectedUnits = Spring.GetSelectedUnits
 	local spGetGameSeconds = Spring.GetGameSeconds
 
 	local announcementStart = 0
